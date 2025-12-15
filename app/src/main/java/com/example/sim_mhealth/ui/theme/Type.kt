@@ -32,9 +32,14 @@ val martel = FontFamily(
 )
 
 val Typography = Typography(
+    headlineLarge = TextStyle(
+        fontFamily = EuphoriaScript,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp
+    ),
     displayLarge = TextStyle(
         fontFamily = martel,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Normal,
         fontSize = 40.sp
     ), headlineMedium = TextStyle(
         fontFamily = martel,

@@ -1,6 +1,5 @@
 package com.example.sim_mhealth.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -39,33 +38,6 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 
-private val LightColorScheme = lightColorScheme(
-    primary = Primary500,
-    onPrimary = Color.White,
-
-    secondary = MintGreen500,
-    onSecondary = Color.White,
-
-    background = Gray50,
-    onBackground = DarkGray900,
-
-    surface = Color.White,
-    onSurface = DarkGray900,
-
-    error = Error,
-    onError = Color.White,
-
-    // Optional slots untuk warna custom turunan
-    primaryContainer = Primary50,
-    onPrimaryContainer = Primary600,
-
-    secondaryContainer = MintGreen50,
-    onSecondaryContainer = MintGreen500,
-
-    surfaceVariant = Gray200,
-    onSurfaceVariant = Gray700,
-)
-
 @Composable
 fun SIMMHealthTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -73,15 +45,7 @@ fun SIMMHealthTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = DarkColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
