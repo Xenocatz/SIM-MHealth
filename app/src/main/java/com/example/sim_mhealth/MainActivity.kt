@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.ui.auth.LoginScreen
 import com.example.sim_mhealth.ui.auth.RegisterScreen
 import com.example.sim_mhealth.ui.introScreen.IntroScreen
+import com.example.sim_mhealth.ui.navigation.AppNavigation
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,29 +21,6 @@ class MainActivity : ComponentActivity() {
             SIMMHealthTheme {
                 AppNavigation()
             }
-        }
-    }
-}
-
-@Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = "intro_screen"
-    ) {
-        composable("intro_screen") {
-            IntroScreen(navController = navController)
-        }
-        composable("onboarding_screen_step_1") {
-
-        }
-        composable("login_screen") {
-            LoginScreen(navController = navController)
-        }
-        composable("register_screen") {
-            RegisterScreen(navController = navController)
         }
     }
 }

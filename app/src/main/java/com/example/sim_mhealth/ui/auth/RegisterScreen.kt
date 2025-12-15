@@ -55,7 +55,7 @@ fun RegisterScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Background Image with blur
         Image(
-            painter = painterResource(id = R.drawable.bg_placeholder),
+            painter = painterResource(id = R.drawable.forest_jogging_group),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
@@ -366,7 +366,7 @@ fun RegisterScreen(
                                             Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
 
                                             // Navigate ke onboarding screen setelah registrasi berhasil
-                                            navController.navigate("onboarding_screen_1") {
+                                            navController.navigate("onboarding_screen_step_1") {
                                                 popUpTo("intro_screen") { inclusive = true }
                                             }
                                         } else {
