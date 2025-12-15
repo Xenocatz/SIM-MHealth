@@ -114,12 +114,12 @@ fun Content(modifier: Modifier = Modifier, navController: NavHostController) {
         Spacer(Modifier.padding(22.dp))
         PrimaryButton(
             text = "Login",
-            onClick = { navController.navigate("login") }
+            onClick = { navController.navigate("login_screen") }
         )
         Spacer(Modifier.padding(5.dp))
         OutlinedPrimaryButton(
             text = "Register",
-            onClick = { navController.navigate("register") }
+            onClick = { navController.navigate("register_screen") }
         )
     }
 }
