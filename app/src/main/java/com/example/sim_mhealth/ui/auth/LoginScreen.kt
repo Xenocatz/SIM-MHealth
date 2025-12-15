@@ -307,8 +307,8 @@ fun LoginScreen(
 
                                             Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
 
-                                            // Navigate ke onboarding screen
-                                            navController.navigate("onboarding_screen_1") {
+
+                                            navController.navigate("home_screen") {
                                                 popUpTo("intro_screen") { inclusive = true }
                                             }
                                         } else {

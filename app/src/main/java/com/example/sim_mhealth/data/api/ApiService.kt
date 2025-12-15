@@ -2,8 +2,10 @@ package com.example.sim_mhealth.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 // Request Models
 data class LoginRequest(
@@ -60,6 +62,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body request: OnBoardingRequest
     ): Response<OnBoardingResponse>
+
+    @GET("pasien/{id}")
+    suspend fun getPasienById(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<PasienResponse>
 }
 
 // OnBoarding Models
@@ -88,5 +96,23 @@ data class OnBoardingData(
     val berat_badan: Float?,
     val jenis_kelamin: String?,
     val jenis_kondisi: List<String>?,  // Array of strings
+    val sejak_kapan: String?
+)
+
+data class PasienResponse(
+    val pasien: PasienDetail
+)
+
+data class PasienDetail(
+    val id_pasien: Int,
+    val username: String,
+    val email: String,
+    val tanggal_lahir: String?,
+    val tinggi_badan: Float?,
+    val berat_badan: Float?,
+    val jenis_kelamin: String?,
+    val alamat: String?,
+    val nomor_telepon: String?,
+    val jenis_kondisi: List<String>?,
     val sejak_kapan: String?
 )

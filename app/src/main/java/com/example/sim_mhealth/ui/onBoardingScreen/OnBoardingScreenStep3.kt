@@ -352,7 +352,7 @@ fun OnBoardingScreen3(
 
                                     OnBoardingData.reset()
 
-                                    navController.navigate("dashboard") {
+                                    navController.navigate("home_screen") {
                                         popUpTo(0) { inclusive = true }
                                     }
                                 } else {
