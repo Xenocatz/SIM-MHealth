@@ -8,127 +8,74 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.sim_mhealth.R
 
-val InterFontFamily = FontFamily(
-    Font(R.font.inter_regular, FontWeight.Normal),
-    Font(R.font.inter_medium, FontWeight.Medium),
-    Font(R.font.inter_semibold, FontWeight.SemiBold),
-    Font(R.font.inter_bold, FontWeight.Bold)
+// Set of Material typography styles to start with
+val EuphoriaScript = FontFamily(
+    Font(R.font.euphoriascript_regular, FontWeight.Normal),
 )
 
-// Typography dengan Inter Font
+val hindMadurai = FontFamily(
+    Font(R.font.hindmadurai_light, FontWeight.Light),
+    Font(R.font.hindmadurai_regular, FontWeight.Normal),
+    Font(R.font.hindmadurai_medium, FontWeight.Medium),
+    Font(R.font.hindmadurai_semibold, FontWeight.SemiBold),
+    Font(R.font.hindmadurai_bold, FontWeight.Bold),
+)
+
+val martel = FontFamily(
+    Font(R.font.martel_extralight, FontWeight.ExtraLight),
+    Font(R.font.martel_light, FontWeight.Light),
+    Font(R.font.martel_regular, FontWeight.Normal),
+    Font(R.font.martel_semibold, FontWeight.SemiBold),
+    Font(R.font.martel_bold, FontWeight.Bold),
+    Font(R.font.martel_extrabold, FontWeight.ExtraBold),
+    Font(R.font.martel_black, FontWeight.Black),
+)
+
 val Typography = Typography(
-    // Display styles
-    displayLarge = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 57.sp,
-        lineHeight = 64.sp,
-        letterSpacing = (-0.25).sp
-    ),
-    displayMedium = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 45.sp,
-        lineHeight = 52.sp,
-        letterSpacing = 0.sp
-    ),
-    displaySmall = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
-        letterSpacing = 0.sp
-    ),
-
-    // Headline styles
     headlineLarge = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = 0.sp
+        fontFamily = EuphoriaScript,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp
     ),
-    headlineMedium = TextStyle(
-        fontFamily = InterFontFamily,
+    displayLarge = TextStyle(
+        fontFamily = martel,
+        fontWeight = FontWeight.Normal,
+        fontSize = 40.sp
+    ), headlineMedium = TextStyle(
+        fontFamily = martel,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        letterSpacing = 0.sp
+        fontSize = 28.sp
     ),
-    headlineSmall = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
-        letterSpacing = 0.sp
+    bodyLarge = TextStyle(
+        fontFamily = hindMadurai,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
     ),
-
-    // Title styles
+    bodyMedium = TextStyle(
+        fontFamily = hindMadurai,
+        fontWeight = FontWeight.Light,
+        fontSize = 14.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = com.example.sim_mhealth.ui.theme.EuphoriaScript,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp
+    )
+)
+    /* Other default text styles to override
     titleLarge = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
-    titleMedium = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.15.sp
-    ),
-    titleSmall = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
-    ),
-
-    // Body styles
-    bodyLarge = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
-    ),
-    bodySmall = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.4.sp
-    ),
-
-    // Label styles
-    labelLarge = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    ),
     labelSmall = TextStyle(
-        fontFamily = InterFontFamily,
+        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )
-)
+    */
