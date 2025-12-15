@@ -12,6 +12,7 @@ import com.example.sim_mhealth.ui.auth.LoginScreen
 import com.example.sim_mhealth.ui.auth.RegisterScreen
 import com.example.sim_mhealth.ui.introScreen.IntroScreen
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
+import com.example.sim_mhealth.ui.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

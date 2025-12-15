@@ -46,6 +46,7 @@ data class RegisterData(
     val token: String,
     val expiresIn: String
 )
+
 // API Interface
 interface ApiService {
     @POST("login")
@@ -55,7 +56,7 @@ interface ApiService {
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
 
     @POST("onBoarding")
-    suspend fun updateOnBoarding(
+    suspend fun updateProfile(
         @Header("Authorization") token: String,
         @Body request: OnBoardingRequest
     ): Response<OnBoardingResponse>
@@ -64,10 +65,12 @@ interface ApiService {
 // OnBoarding Models
 data class OnBoardingRequest(
     val id_pasien: Int,
-    val tanggal_lahir: String,
-    val tinggi_badan: Float,
-    val berat_badan: Float,
-    val jenis_kelamin: String
+    val tanggal_lahir: String?,
+    val tinggi_badan: Float?,
+    val berat_badan: Float?,
+    val jenis_kelamin: String?,
+    val jenis_kondisi: List<String>?,  // Array of strings
+    val sejak_kapan: String?
 )
 
 data class OnBoardingResponse(
@@ -80,8 +83,10 @@ data class OnBoardingData(
     val id_pasien: Int,
     val username: String,
     val email: String,
-    val tanggal_lahir: String,
-    val tinggi_badan: Float,
-    val berat_badan: Float,
-    val jenis_kelamin: String
+    val tanggal_lahir: String?,
+    val tinggi_badan: Float?,
+    val berat_badan: Float?,
+    val jenis_kelamin: String?,
+    val jenis_kondisi: List<String>?,  // Array of strings
+    val sejak_kapan: String?
 )

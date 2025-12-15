@@ -365,7 +365,7 @@ fun RegisterScreen(
                                             Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
 
                                             // Navigate ke onboarding screen setelah registrasi berhasil
-                                            navController.navigate("onboarding_screen_step_1") {
+                                            navController.navigate("onboarding_screen_1") {
                                                 popUpTo("intro_screen") { inclusive = true }
                                             }
                                         } else {
