@@ -3,43 +3,46 @@ package com.example.sim_mhealth
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.sim_mhealth.ui.auth.LoginScreen
+import com.example.sim_mhealth.ui.auth.RegisterScreen
 import com.example.sim_mhealth.ui.introScreen.IntroScreen
-import com.example.sim_mhealth.ui.navigation.AppNavigation
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             SIMMHealthTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppNavigation()
-                }
+                AppNavigation()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppNavigation() {
+    val navController = rememberNavController()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SIMMHealthTheme {
-        Greeting("Android")
+    NavHost(
+        navController = navController,
+        startDestination = "intro_screen"
+    ) {
+        composable("intro_screen") {
+            IntroScreen(navController = navController)
+        }
+        composable("onboarding_screen_step_1") {
+
+        }
+        composable("login_screen") {
+            LoginScreen(navController = navController)
+        }
+        composable("register_screen") {
+            RegisterScreen(navController = navController)
+        }
     }
 }
