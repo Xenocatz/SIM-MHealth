@@ -185,6 +185,7 @@ fun LoginScreen(
                     Text(
                         text = "Username",
                         fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -204,7 +205,8 @@ fun LoginScreen(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
                         ),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -213,6 +215,7 @@ fun LoginScreen(
                     Text(
                         text = "Password",
                         fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -277,14 +280,21 @@ fun LoginScreen(
                     // Login button
                     Button(
                         onClick = {
-                            if (username.isBlank() || password.isBlank()) {
-                                Toast.makeText(context, "Username dan password harus diisi", Toast.LENGTH_SHORT).show()
-                                return@Button
+                            // Validasi input
+                            when {
+                                username.isBlank() -> {
+                                    Toast.makeText(context, "Silahkan isi username", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+                                password.isBlank() -> {
+                                    Toast.makeText(context, "Input password tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
                             }
 
                             isLoading = true
                             scope.launch {
-                                repository.login(username, password).fold(
+                                repository.login(username.trim(), password).fold(
                                     onSuccess = { response ->
                                         if (response.success && response.data != null) {
                                             // Simpan data login
@@ -297,18 +307,22 @@ fun LoginScreen(
 
                                             Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
 
-                                            // Navigate ke home screen
-                                            // navController.navigate("home_screen") {
-                                            //     popUpTo("intro_screen") { inclusive = true }
-                                            // }
-                                            Toast.makeText(context, "Login berhasil! Token: ${response.data.token.take(20)}...", Toast.LENGTH_LONG).show()
+                                            // Navigate ke onboarding screen
+                                            navController.navigate("onboarding_screen_step_1") {
+                                                popUpTo("intro_screen") { inclusive = true }
+                                            }
                                         } else {
-                                            Toast.makeText(context, "Login gagal: ${response.message}", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
                                         }
                                         isLoading = false
                                     },
                                     onFailure = { error ->
-                                        Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                        val errorMessage = when {
+                                            error.message?.contains("401") == true -> "Username atau password tidak valid"
+                                            error.message?.contains("Failed to connect") == true -> "Gagal terhubung ke server"
+                                            else -> error.message ?: "Terjadi kesalahan"
+                                        }
+                                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                                         isLoading = false
                                     }
                                 )

@@ -2,6 +2,7 @@ package com.example.sim_mhealth.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 // Request Models
@@ -31,14 +32,19 @@ data class LoginData(
 data class User(
     val id_pasien: Int,
     val username: String,
-    val email: String,
-    val is_active: Boolean
+    val email: String? = null
 )
 
 data class RegisterResponse(
     val success: Boolean,
-    val data: Any?,
+    val data: RegisterData?,
     val message: String
+)
+
+data class RegisterData(
+    val user: User,
+    val token: String,
+    val expiresIn: String
 )
 
 // API Interface
@@ -48,4 +54,35 @@ interface ApiService {
 
     @POST("registration")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
+
+    @POST("onBoarding")
+    suspend fun updateOnBoarding(
+        @Header("Authorization") token: String,
+        @Body request: OnBoardingRequest
+    ): Response<OnBoardingResponse>
 }
+
+// OnBoarding Models
+data class OnBoardingRequest(
+    val id_pasien: Int,
+    val tanggal_lahir: String,
+    val tinggi_badan: Float,
+    val berat_badan: Float,
+    val jenis_kelamin: String
+)
+
+data class OnBoardingResponse(
+    val success: Boolean,
+    val data: OnBoardingData?,
+    val message: String
+)
+
+data class OnBoardingData(
+    val id_pasien: Int,
+    val username: String,
+    val email: String,
+    val tanggal_lahir: String,
+    val tinggi_badan: Float,
+    val berat_badan: Float,
+    val jenis_kelamin: String
+)

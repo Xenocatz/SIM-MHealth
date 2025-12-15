@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.sim_mhealth.R
+import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     navController: NavController
@@ -42,27 +42,20 @@ fun RegisterScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val repository = remember { AuthRepository() }
+    val prefsManager = remember { PreferencesManager(context) }
 
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var tanggalLahir by remember { mutableStateOf("") }
-    var umur by remember { mutableStateOf("") }
-    var tinggiBadan by remember { mutableStateOf("") }
-    var beratBadan by remember { mutableStateOf("") }
-    var jenisKelamin by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
-    val jenisKelaminOptions = listOf("Laki-laki", "Perempuan")
-
     Box(modifier = Modifier.fillMaxSize()) {
         // Background Image with blur
         Image(
-            painter = painterResource(id = R.drawable.forest_jogging_group),
+            painter = painterResource(id = R.drawable.bg_placeholder),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
@@ -193,6 +186,7 @@ fun RegisterScreen(
                     Text(
                         text = "Username",
                         fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -212,15 +206,17 @@ fun RegisterScreen(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
                         ),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Email field
                     Text(
                         text = "Email",
                         fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -241,14 +237,17 @@ fun RegisterScreen(
                             unfocusedBorderColor = Color.LightGray
                         ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
+                    // Password field
                     Text(
                         text = "Password",
                         fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -282,12 +281,13 @@ fun RegisterScreen(
                         enabled = !isLoading
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Confirm Password field
                     Text(
                         text = "Ulangi Password",
                         fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -321,41 +321,70 @@ fun RegisterScreen(
                         enabled = !isLoading
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Register button
                     Button(
                         onClick = {
-                            // Validasi form
+                            // Validasi form sesuai backend
                             when {
-                                username.isBlank() -> Toast.makeText(context, "Username harus diisi", Toast.LENGTH_SHORT).show()
-                                email.isBlank() -> Toast.makeText(context, "Email harus diisi", Toast.LENGTH_SHORT).show()
-                                password.isBlank() -> Toast.makeText(context, "Password harus diisi", Toast.LENGTH_SHORT).show()
-                                password != confirmPassword -> Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT).show()
-                                else -> {
-                                    isLoading = true
-                                    scope.launch {
-                                        repository.register(
-                                            username = username,
-                                            email = email,
-                                            password = password
-                                        ).fold(
-                                            onSuccess = { response ->
-                                                if (response.success) {
-                                                    Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
-                                                    navController.popBackStack()
-                                                } else {
-                                                    Toast.makeText(context, "Registrasi gagal: ${response.message}", Toast.LENGTH_SHORT).show()
-                                                }
-                                                isLoading = false
-                                            },
-                                            onFailure = { error ->
-                                                Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
-                                                isLoading = false
-                                            }
-                                        )
-                                    }
+                                username.isBlank() || email.isBlank() || password.isBlank() -> {
+                                    Toast.makeText(context, "Username, email dan password wajib hukumnya untuk diisi", Toast.LENGTH_SHORT).show()
+                                    return@Button
                                 }
+                                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                                    Toast.makeText(context, "Format email tidak valid", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+                                password != confirmPassword -> {
+                                    Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+                                password.length < 6 -> {
+                                    Toast.makeText(context, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+                            }
+
+                            isLoading = true
+                            scope.launch {
+                                repository.register(
+                                    username = username.trim(),
+                                    email = email.trim().lowercase(),
+                                    password = password
+                                ).fold(
+                                    onSuccess = { response ->
+                                        if (response.success && response.data != null) {
+                                            // Simpan data login dari response registrasi
+                                            prefsManager.saveLoginData(
+                                                token = response.data.token,
+                                                userId = response.data.user.id_pasien,
+                                                username = response.data.user.username,
+                                                email = response.data.user.email
+                                            )
+
+                                            Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+
+                                            // Navigate ke onboarding screen setelah registrasi berhasil
+                                            navController.navigate("onboarding_screen_1") {
+                                                popUpTo("intro_screen") { inclusive = true }
+                                            }
+                                        } else {
+                                            Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                                        }
+                                        isLoading = false
+                                    },
+                                    onFailure = { error ->
+                                        val errorMessage = when {
+                                            error.message?.contains("409") == true -> "Username atau Email sudah dipakai"
+                                            error.message?.contains("400") == true -> "Data tidak valid"
+                                            error.message?.contains("Failed to connect") == true -> "Gagal terhubung ke server"
+                                            else -> error.message ?: "Terjadi kesalahan"
+                                        }
+                                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                        isLoading = false
+                                    }
+                                )
                             }
                         },
                         modifier = Modifier

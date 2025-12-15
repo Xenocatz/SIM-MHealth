@@ -16,12 +16,12 @@ class PreferencesManager(context: Context) {
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
     }
 
-    fun saveLoginData(token: String, userId: Int, username: String, email: String) {
+    fun saveLoginData(token: String, userId: Int, username: String, email: String?) {
         prefs.edit().apply {
             putString(KEY_TOKEN, token)
             putInt(KEY_USER_ID, userId)
             putString(KEY_USERNAME, username)
-            putString(KEY_EMAIL, email)
+            putString(KEY_EMAIL, email ?: "")
             putBoolean(KEY_IS_LOGGED_IN, true)
             apply()
         }
