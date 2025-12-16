@@ -242,7 +242,7 @@ fun RegisterScreen(
                         value = password,
                         onValueChange = { password = it },
                         modifier = Modifier.fillMaxWidth(),
-                        textStyle = TextStyle(color = Color.DarkGray),
+                        textStyle = TextStyle(color = Gray700),
                         placeholder = { Text("••••••••") },
                         leadingIcon = {
                             Icon(
@@ -262,7 +262,6 @@ fun RegisterScreen(
                         },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         shape = RoundedCornerShape(12.dp),
-                        textStyle = TextStyle(color = Gray700),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
@@ -285,8 +284,10 @@ fun RegisterScreen(
                     OutlinedTextField(
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = TextStyle(color = Color.DarkGray),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        textStyle = TextStyle(color = Gray700),
                         placeholder = { Text("••••••••") },
                         leadingIcon = {
                             Icon(
@@ -306,7 +307,6 @@ fun RegisterScreen(
                         },
                         visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         shape = RoundedCornerShape(12.dp),
-                        textStyle = TextStyle(color = Gray700),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
