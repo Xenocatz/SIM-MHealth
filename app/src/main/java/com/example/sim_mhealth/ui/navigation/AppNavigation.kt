@@ -71,7 +71,7 @@ fun AppNavigation() {
                 ReminderListScreen(navController = navController)
             }
             composable("ai_screen") { _ ->
-                AIScreen()
+                AIScreen(navController = navController)
             }
             composable("profile_screen") { _ ->
                 ProfileScreen(navController = navController)

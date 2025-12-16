@@ -62,6 +62,8 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.compose.material:material-icons-extended")
 
+    // gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
