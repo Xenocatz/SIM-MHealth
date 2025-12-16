@@ -115,7 +115,7 @@ fun Content(modifier: Modifier = Modifier, navController: NavHostController) {
         Spacer(Modifier.padding(22.dp))
         PrimaryButton(
             text = "Login",
-            onClick = { navController.navigate("onboarding_screen_1") }
+            onClick = { navController.navigate("login_screen") }
         )
         Spacer(Modifier.padding(5.dp))
         OutlinedPrimaryButton(

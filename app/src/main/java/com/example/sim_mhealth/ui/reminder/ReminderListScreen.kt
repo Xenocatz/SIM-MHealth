@@ -38,11 +38,12 @@ fun ReminderListScreen(navController: NavController) {
 
     var reminderList by remember { mutableStateOf<List<PengingatItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
+    var selectedDate by remember {
+        mutableStateOf(Calendar.getInstance())
+    }
     var selectedReminder by remember { mutableStateOf<PengingatItem?>(null) }
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    // Load data
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
         val userId = prefsManager.getUserId()
@@ -71,7 +72,6 @@ fun ReminderListScreen(navController: NavController) {
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,7 +133,6 @@ fun ReminderListScreen(navController: NavController) {
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Month/Year display
                     Text(
                         text = SimpleDateFormat("MMMM yyyy", Locale("id", "ID")).format(selectedDate.time),
                         fontSize = 18.sp,
@@ -144,7 +143,6 @@ fun ReminderListScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Date selector
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -188,7 +186,6 @@ fun ReminderListScreen(navController: NavController) {
             }
         }
 
-        // Bottom Sheet
         if (showBottomSheet && selectedReminder != null) {
             ReminderBottomSheet(
                 reminder = selectedReminder!!,
@@ -334,7 +331,6 @@ fun ReminderCard(reminder: PengingatItem, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                // Status indicator
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Done",
@@ -452,7 +448,6 @@ fun ReminderBottomSheet(
     }
 }
 
-// Helper functions
 fun getDatesForMonth(currentDate: Calendar): List<Calendar> {
     val dates = mutableListOf<Calendar>()
     val calendar = currentDate.clone() as Calendar

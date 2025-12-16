@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.OnBoardingRepository
+import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -217,17 +218,11 @@ fun OnBoardingScreen3(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = sejakKapan,
-                onValueChange = { sejakKapan = it },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.DarkGray),
-                placeholder = { Text("mm/yyyy", color = Color.LightGray) },
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF2196F3),
-                    unfocusedBorderColor = Color.LightGray
-                )
+            DateInputWithCalendarPicker(
+                selectedDate = sejakKapan,
+                onDateSelected = { newDate ->
+                    sejakKapan = newDate
+                }
             )
         }
 
