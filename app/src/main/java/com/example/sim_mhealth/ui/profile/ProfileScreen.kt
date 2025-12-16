@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import com.example.sim_mhealth.data.api.PasienDetail
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ProfileRepository
+import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -181,18 +182,11 @@ fun ProfileScreen(navController: NavController) {
                     color = Color.Black,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                OutlinedTextField(
-                    value = tanggalLahir,
-                    onValueChange = { tanggalLahir = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(color = Color.DarkGray),
-                    placeholder = { Text("DD-MM-YYYY") },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF2196F3),
-                        unfocusedBorderColor = Color(0xFFE0E0E0)
-                    ),
-                    singleLine = true
+                DateInputWithCalendarPicker(
+                    selectedDate = tanggalLahir,
+                    onDateSelected = { newDate ->
+                        tanggalLahir  = newDate
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

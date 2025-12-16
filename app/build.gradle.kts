@@ -23,11 +23,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -65,6 +63,7 @@ dependencies {
     // gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
     // Navigation
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.36.0")
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
     // Retrofit for API calls

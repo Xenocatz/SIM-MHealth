@@ -4,8 +4,10 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
@@ -64,6 +66,8 @@ fun RegisterScreen(
 
     val currentAuthSegment by remember { mutableStateOf(AuthSegment.REGISTER) }
 
+    val scrollState = rememberScrollState()
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.forest_jogging_group),
@@ -113,7 +117,8 @@ fun RegisterScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
+                    .padding(24.dp)
+                    .verticalScroll(scrollState)
             ) {
                 Text(
                     text = "MHealth",
@@ -237,6 +242,7 @@ fun RegisterScreen(
                         value = password,
                         onValueChange = { password = it },
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(color = Color.DarkGray),
                         placeholder = { Text("••••••••") },
                         leadingIcon = {
                             Icon(
@@ -280,6 +286,7 @@ fun RegisterScreen(
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it },
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(color = Color.DarkGray),
                         placeholder = { Text("••••••••") },
                         leadingIcon = {
                             Icon(

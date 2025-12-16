@@ -1,6 +1,8 @@
 package com.example.sim_mhealth.ui.onBoardingScreen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,6 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.sim_mhealth.R
+import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun OnBoardingScreen2(navController: NavController) {
@@ -32,6 +38,7 @@ fun OnBoardingScreen2(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -77,24 +84,12 @@ fun OnBoardingScreen2(navController: NavController) {
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         )
-        OutlinedTextField(
-            value = tanggalLahir,
-            onValueChange = { tanggalLahir = it },
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.DarkGray),
-            placeholder = { Text("DD/MM/YYYY", color = Color.LightGray) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.CalendarToday,
-                    contentDescription = "Date",
-                    tint = Color(0xFF2196F3)
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF2196F3),
-                unfocusedBorderColor = Color.LightGray
-            )
+
+        DateInputWithCalendarPicker(
+            selectedDate = tanggalLahir,
+            onDateSelected = { newDate ->
+                tanggalLahir = newDate
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))

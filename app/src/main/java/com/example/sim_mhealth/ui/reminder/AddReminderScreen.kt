@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import com.example.sim_mhealth.data.api.CreatePengingatRequest
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ReminderRepository
+import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +45,7 @@ fun AddReminderScreen(navController: NavController) {
     var tanggalMulai by remember { mutableStateOf("") }
     var tanggalAkhir by remember { mutableStateOf("") }
     var frekuensi by remember { mutableStateOf("3x Sehari") }
-    var waktuAlarm by remember { mutableStateOf(mutableListOf("08:00")) }
+    val waktuAlarm = remember { mutableStateListOf("08:00") }
     var catatan by remember { mutableStateOf("") }
     var stokAwal by remember { mutableStateOf("") }
 
@@ -281,7 +282,6 @@ fun AddReminderScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Frekuensi
             Text(
                 text = "Frekuensi*",
                 fontSize = 14.sp,
@@ -328,7 +328,6 @@ fun AddReminderScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Periode
             Text(
                 text = "Periode*",
                 fontSize = 14.sp,
@@ -340,21 +339,12 @@ fun AddReminderScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                OutlinedTextField(
-                    value = tanggalMulai,
-                    onValueChange = { tanggalMulai = it },
-                    modifier = Modifier.weight(1f),
-                    textStyle = TextStyle(color = Color.DarkGray),
-                    placeholder = { Text("hh/bb/tttt") },
-                    leadingIcon = {
-                        Icon(Icons.Default.DateRange, null, tint = Color(0xFF2196F3))
+                DateInputWithCalendarPicker(
+                    selectedDate = tanggalMulai,
+                    onDateSelected = { newDate ->
+                        tanggalMulai = newDate
                     },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF2196F3),
-                        unfocusedBorderColor = Color(0xFFE0E0E0)
-                    ),
-                    singleLine = true
+                    modifier = Modifier.weight(1f)
                 )
 
                 Icon(
@@ -366,27 +356,15 @@ fun AddReminderScreen(navController: NavController) {
                     tint = Color.Gray
                 )
 
-                OutlinedTextField(
-                    value = tanggalAkhir,
-                    onValueChange = { tanggalAkhir = it },
-                    modifier = Modifier.weight(1f),
-                    textStyle = TextStyle(color = Color.DarkGray),
-                    placeholder = { Text("hh/bb/tttt") },
-                    leadingIcon = {
-                        Icon(Icons.Default.DateRange, null, tint = Color(0xFF2196F3))
+                DateInputWithCalendarPicker(
+                    selectedDate = tanggalAkhir,
+                    onDateSelected = { newDate ->
+                        tanggalAkhir = newDate
                     },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF2196F3),
-                        unfocusedBorderColor = Color(0xFFE0E0E0)
-                    ),
-                    singleLine = true
+                    modifier = Modifier.weight(1f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Waktu
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -396,7 +374,8 @@ fun AddReminderScreen(navController: NavController) {
                     text = "Waktu*",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 IconButton(
@@ -413,43 +392,31 @@ fun AddReminderScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             waktuAlarm.forEachIndexed { index, time ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = time,
-                        onValueChange = { newTime ->
-                            waktuAlarm[index] = newTime
-                        },
-                        modifier = Modifier.weight(1f),
-                        textStyle = TextStyle(color = Color.DarkGray),
-                        placeholder = { Text("--:--") },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF2196F3),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
-                        ),
-                        singleLine = true
-                    )
-
-                    if (waktuAlarm.size > 1) {
-                        IconButton(
-                            onClick = { waktuAlarm.removeAt(index) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Remove",
-                                tint = Color(0xFFF44336)
-                            )
-                        }
+                key(index) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = time,
+                            onValueChange = { newTime ->
+                                waktuAlarm[index] = newTime
+                            },
+                            modifier = Modifier.weight(1f),
+                            textStyle = TextStyle(color = Color.DarkGray),
+                            placeholder = { Text("--:--") },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF2196F3),
+                                unfocusedBorderColor = Color(0xFFE0E0E0)
+                            ),
+                            singleLine = true
+                        )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
             Spacer(modifier = Modifier.height(16.dp))

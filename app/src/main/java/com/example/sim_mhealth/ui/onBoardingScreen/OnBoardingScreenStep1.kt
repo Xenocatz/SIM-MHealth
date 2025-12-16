@@ -27,6 +27,7 @@ import com.example.sim_mhealth.ui.theme.Gray700
 fun OnBoardingScreen1(navController: NavController) {
     Box(
         modifier = Modifier
+            .background(Color.White)
             .fillMaxSize()
             .background(Gray50)
     ) {

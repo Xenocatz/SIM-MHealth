@@ -27,6 +27,7 @@ import com.example.sim_mhealth.data.api.PengingatDetail
 import com.example.sim_mhealth.data.api.UpdatePengingatRequest
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ReminderRepository
+import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -123,7 +124,6 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -211,7 +211,6 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                     .verticalScroll(rememberScrollState())
                     .padding(24.dp)
             ) {
-                // Medicine Icon
                 Box(
                     modifier = Modifier
                         .size(100.dp)
@@ -229,7 +228,6 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Nama Obat
                 Text(
                     text = "Nama Obat*",
                     fontSize = 14.sp,
@@ -253,7 +251,6 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Dosis
                 Text(
                     text = "Dosis*",
                     fontSize = 14.sp,
@@ -332,21 +329,11 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    OutlinedTextField(
-                        value = tanggalMulai,
-                        onValueChange = { tanggalMulai = it },
-                        modifier = Modifier.weight(1f),
-                        textStyle = TextStyle(color = Color.DarkGray),
-                        placeholder = { Text("dd-MM-yyyy") },
-                        leadingIcon = {
-                            Icon(Icons.Default.DateRange, null, tint = Color(0xFF2196F3))
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF2196F3),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
-                        ),
-                        singleLine = true
+                    DateInputWithCalendarPicker(
+                        selectedDate = tanggalMulai,
+                        onDateSelected = { newDate ->
+                            tanggalMulai = newDate
+                        }
                     )
 
                     Icon(
@@ -358,25 +345,13 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         tint = Color.Gray
                     )
 
-                    OutlinedTextField(
-                        value = tanggalAkhir,
-                        onValueChange = { tanggalAkhir = it },
-                        modifier = Modifier.weight(1f),
-                        textStyle = TextStyle(color = Color.DarkGray),
-                        placeholder = { Text("dd-MM-yyyy") },
-                        leadingIcon = {
-                            Icon(Icons.Default.DateRange, null, tint = Color(0xFF2196F3))
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF2196F3),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
-                        ),
-                        singleLine = true
+                    DateInputWithCalendarPicker(
+                        selectedDate = tanggalAkhir,
+                        onDateSelected = { newDate ->
+                            tanggalAkhir = newDate
+                        }
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -387,7 +362,8 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         text = "Waktu*",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
 
                     TextButton(
@@ -409,8 +385,6 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
 
                 waktuAlarm.forEachIndexed { index, time ->
                     Row(
