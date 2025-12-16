@@ -71,7 +71,7 @@ fun AppNavigation() {
                 AIScreen()
             }
             composable("profile_screen") { _ ->
-                ProfileScreen()
+                ProfileScreen(navController = navController)
             }
         }
     }

@@ -5,6 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 // Request Models
@@ -68,7 +69,33 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Response<PasienResponse>
+
+    @PUT("pasien/{id}")
+    suspend fun updatePasien(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: UpdateProfileRequest
+    ): Response<UpdateProfileResponse>
 }
+
+// Dashboard Models
+data class PasienResponse(
+    val pasien: PasienDetail
+)
+
+data class PasienDetail(
+    val id_pasien: Int,
+    val username: String,
+    val email: String,
+    val tanggal_lahir: String?,
+    val tinggi_badan: Float?,
+    val berat_badan: Float?,
+    val jenis_kelamin: String?,
+    val alamat: String?,
+    val nomor_telepon: String?,
+    val jenis_kondisi: List<String>?,
+    val sejak_kapan: String?
+)
 
 // OnBoarding Models
 data class OnBoardingRequest(
@@ -99,20 +126,16 @@ data class OnBoardingData(
     val sejak_kapan: String?
 )
 
-data class PasienResponse(
-    val pasien: PasienDetail
+// Update Profile Models
+data class UpdateProfileRequest(
+    val email: String?,
+    val tanggal_lahir: String?,
+    val berat_badan: Float?,
+    val tinggi_badan: Float?,
+    val jenis_kelamin: String?
 )
 
-data class PasienDetail(
-    val id_pasien: Int,
-    val username: String,
-    val email: String,
-    val tanggal_lahir: String?,
-    val tinggi_badan: Float?,
-    val berat_badan: Float?,
-    val jenis_kelamin: String?,
-    val alamat: String?,
-    val nomor_telepon: String?,
-    val jenis_kondisi: List<String>?,
-    val sejak_kapan: String?
+data class UpdateProfileResponse(
+    val message: String,
+    val pasien: PasienDetail
 )
