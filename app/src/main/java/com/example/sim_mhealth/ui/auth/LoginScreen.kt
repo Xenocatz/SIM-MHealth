@@ -87,7 +87,8 @@ fun AuthSegmentedControl(
             ) {
                 Text(
                     text = "Login",
-                    fontWeight = if (selectedSegment == AuthSegment.LOGIN) FontWeight.Bold else FontWeight.Normal
+                    fontWeight = if (selectedSegment == AuthSegment.LOGIN) FontWeight.Bold else FontWeight.Normal,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 
@@ -117,7 +118,8 @@ fun AuthSegmentedControl(
             ) {
                 Text(
                     text = "Register",
-                    fontWeight = if (selectedSegment == AuthSegment.REGISTER) FontWeight.Bold else FontWeight.Normal
+                    fontWeight = if (selectedSegment == AuthSegment.REGISTER) FontWeight.Bold else FontWeight.Normal,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
@@ -168,7 +170,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             IconButton(
                 onClick = { navController.popBackStack() },
@@ -259,7 +261,7 @@ fun LoginScreen(
                                 tint = Color(0xFF2196F3)
                             )
                         },
-                        textStyle = TextStyle(color = Color.DarkGray),
+                        textStyle = TextStyle(color = Gray700),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
@@ -284,7 +286,7 @@ fun LoginScreen(
                         onValueChange = { password = it },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text("••••••••") },
-                        textStyle = TextStyle(color = Color.DarkGray),
+                        textStyle = TextStyle(color = Gray700),
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,

@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.R
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 
@@ -173,6 +174,6 @@ fun OutlinedPrimaryButton(
 //@Composable
 //fun IntroScreenPreview() {
 //    SIMMHealthTheme {
-//        IntroScreen(navController = NavHostController(), modifier = Modifier.fillMaxWidth())
+//        IntroScreen(navController = rememberNavController())
 //    }
 //}

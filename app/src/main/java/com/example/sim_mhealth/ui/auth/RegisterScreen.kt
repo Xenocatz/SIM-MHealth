@@ -39,7 +39,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.R
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.AuthRepository
+import com.example.sim_mhealth.ui.theme.Gray700
 import com.example.sim_mhealth.ui.theme.MintGreen500
+import com.example.sim_mhealth.ui.theme.Primary50
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 import kotlinx.coroutines.launch
 
@@ -88,7 +90,7 @@ fun RegisterScreen(
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             IconButton(
                 onClick = { navController.popBackStack() },
@@ -156,18 +158,20 @@ fun RegisterScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = "Username",
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
                         modifier = Modifier.fillMaxWidth(),
-                        textStyle = TextStyle(color = Color.DarkGray),
                         placeholder = { Text("alpitraonichan") },
                         leadingIcon = {
                             Icon(
@@ -177,6 +181,7 @@ fun RegisterScreen(
                             )
                         },
                         shape = RoundedCornerShape(12.dp),
+                        textStyle = TextStyle(color = Gray700),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
@@ -190,13 +195,15 @@ fun RegisterScreen(
                     Text(
                         text = "Email",
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
                         modifier = Modifier.fillMaxWidth(),
-                        textStyle = TextStyle(color = Color.DarkGray),
                         placeholder = { Text("health_care@gmail.com") },
                         leadingIcon = {
                             Icon(
@@ -206,6 +213,7 @@ fun RegisterScreen(
                             )
                         },
                         shape = RoundedCornerShape(12.dp),
+                        textStyle = TextStyle(color = Gray700),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
@@ -220,7 +228,10 @@ fun RegisterScreen(
                     Text(
                         text = "Password",
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = password,
@@ -245,6 +256,7 @@ fun RegisterScreen(
                         },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         shape = RoundedCornerShape(12.dp),
+                        textStyle = TextStyle(color = Gray700),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
@@ -259,7 +271,10 @@ fun RegisterScreen(
                     Text(
                         text = "Ulangi Password",
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = confirmPassword,
@@ -284,6 +299,7 @@ fun RegisterScreen(
                         },
                         visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         shape = RoundedCornerShape(12.dp),
+                        textStyle = TextStyle(color = Gray700),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
                             unfocusedBorderColor = Color.LightGray
@@ -373,7 +389,8 @@ fun RegisterScreen(
                                 text = "Register",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Primary50,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }

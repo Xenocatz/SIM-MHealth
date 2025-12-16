@@ -20,7 +20,7 @@ import com.example.sim_mhealth.ui.reminder.ReminderListScreen
 import com.example.sim_mhealth.ui.reminder.AddReminderScreen
 import com.example.sim_mhealth.ui.reminder.DetailReminderScreen
 import com.example.sim_mhealth.ui.reminder.EditReminderScreen
-import com.example.sim_mhealth.ui.ai.AIScreen
+//import com.example.sim_mhealth.ui.ai.AIScreen
 import com.example.sim_mhealth.ui.profile.ProfileScreen
 
 @Composable
@@ -70,9 +70,9 @@ fun AppNavigation() {
             composable("reminder_screen") { _ ->
                 ReminderListScreen(navController = navController)
             }
-            composable("ai_screen") { _ ->
-                AIScreen(navController = navController)
-            }
+//            composable("ai_screen") { _ ->
+//                AIScreen(navController = navController)
+//            }
             composable("profile_screen") { _ ->
                 ProfileScreen(navController = navController)
             }

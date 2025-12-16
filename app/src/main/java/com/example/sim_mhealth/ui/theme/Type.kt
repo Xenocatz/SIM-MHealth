@@ -58,7 +58,7 @@ val Typography = Typography(
         fontSize = 14.sp
     ),
     labelLarge = TextStyle(
-        fontFamily = com.example.sim_mhealth.ui.theme.EuphoriaScript,
+        fontFamily = EuphoriaScript,
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp
     )
