@@ -2,6 +2,7 @@ package com.example.sim_mhealth.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -76,6 +77,38 @@ interface ApiService {
         @Path("id") id: Int,
         @Body request: UpdateProfileRequest
     ): Response<UpdateProfileResponse>
+
+    // Reminder/Pengingat endpoints
+    @GET("pengingat/pasien/{id_pasien}")
+    suspend fun getPengingatByPasien(
+        @Header("Authorization") token: String,
+        @Path("id_pasien") idPasien: Int
+    ): Response<PengingatResponse>
+
+    @GET("pengingat/{id}")
+    suspend fun getPengingatById(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<PengingatDetailResponse>
+
+    @POST("pengingat")
+    suspend fun createPengingat(
+        @Header("Authorization") token: String,
+        @Body request: CreatePengingatRequest
+    ): Response<CreatePengingatResponse>
+
+    @PUT("pengingat/{id}")
+    suspend fun updatePengingat(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: UpdatePengingatRequest
+    ): Response<UpdatePengingatResponse>
+
+    @DELETE("pengingat/{id}")
+    suspend fun deletePengingat(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<DeletePengingatResponse>
 }
 
 // Dashboard Models
@@ -138,4 +171,91 @@ data class UpdateProfileRequest(
 data class UpdateProfileResponse(
     val message: String,
     val pasien: PasienDetail
+)
+
+data class PengingatResponse(
+    val pengingat: List<PengingatItem>
+)
+
+data class PengingatDetailResponse(
+    val pengingat: PengingatDetail
+)
+
+data class PengingatItem(
+    val id_pengingat: Int,
+    val id_pasien: Int,
+    val nama_obat: String,
+    val dosis_kuantitas: Float,
+    val dosis_unit: String,
+    val frekuensi: String,
+    val tanggal_mulai: String,
+    val tanggal_akhir: String?,
+    val catatan: String?,
+    val waktu_alarm: List<String>,
+    val stok_awal: Int?,
+    val stok_saat_ini: Int?
+)
+
+data class PengingatDetail(
+    val id_pengingat: Int,
+    val id_pasien: Int,
+    val nama_obat: String,
+    val dosis_kuantitas: Float,
+    val dosis_unit: String,
+    val frekuensi: String,
+    val tanggal_mulai: String,
+    val tanggal_akhir: String?,
+    val catatan: String?,
+    val waktu_alarm: List<String>,
+    val stok_awal: Int?,
+    val stok_saat_ini: Int?,
+    val detail_jadwal: List<DetailPengingat>?
+)
+
+data class DetailPengingat(
+    val id_detail: Int,
+    val id_pengingat: Int,
+    val tanggal_minum: String,
+    val waktu_minum: String,
+    val status: String,
+    val waktu_diselesaikan: String?
+)
+
+data class CreatePengingatRequest(
+    val id_pasien: Int,
+    val nama_obat: String,
+    val dosis_kuantitas: Float,
+    val dosis_unit: String,
+    val frekuensi: String,
+    val tanggal_mulai: String,
+    val tanggal_akhir: String?,
+    val catatan: String?,
+    val waktu_alarm: List<String>,
+    val stok_awal: Int?
+)
+
+data class UpdatePengingatRequest(
+    val nama_obat: String?,
+    val dosis_kuantitas: Float?,
+    val dosis_unit: String?,
+    val frekuensi: String?,
+    val tanggal_mulai: String?,
+    val tanggal_akhir: String?,
+    val catatan: String?,
+    val waktu_alarm: List<String>?,
+    val stok_awal: Int?
+)
+
+data class CreatePengingatResponse(
+    val message: String,
+    val pengingat: PengingatItem
+)
+
+data class UpdatePengingatResponse(
+    val message: String,
+    val pengingat: PengingatItem
+)
+
+data class DeletePengingatResponse(
+    val message: String
 )

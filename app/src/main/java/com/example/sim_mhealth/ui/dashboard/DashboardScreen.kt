@@ -26,8 +26,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.sim_mhealth.R
 import com.example.sim_mhealth.data.api.PasienDetail
+import com.example.sim_mhealth.data.api.PengingatItem
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.DashboardRepository
+import com.example.sim_mhealth.data.repository.ReminderRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,9 +40,11 @@ fun DashboardScreen(navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val repository = remember { DashboardRepository() }
+    val reminderRepository = remember { ReminderRepository() }
     val prefsManager = remember { PreferencesManager(context) }
 
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
+    var nextReminder by remember { mutableStateOf<PengingatItem?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -49,16 +53,27 @@ fun DashboardScreen(navController: NavController) {
 
         if (token != null && userId != -1) {
             scope.launch {
+                // Fetch data pasien
                 repository.getPasienData(token, userId).fold(
                     onSuccess = { response ->
                         pasienData = response.pasien
-                        isLoading = false
                     },
                     onFailure = { error ->
                         Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
-                        isLoading = false
                     }
                 )
+
+                // Fetch pengingat obat
+                reminderRepository.getPengingatByPasien(token, userId).fold(
+                    onSuccess = { response ->
+                        nextReminder = response.pengingat.firstOrNull()
+                    },
+                    onFailure = {
+                        // Error di-handle secara silent
+                    }
+                )
+
+                isLoading = false
             }
         } else {
             isLoading = false
@@ -76,15 +91,18 @@ fun DashboardScreen(navController: NavController) {
         DashboardContent(
             navController = navController,
             pasienData = pasienData,
+            nextReminder = nextReminder,
             username = prefsManager.getUsername() ?: "User"
         )
     }
 }
 
+
 @Composable
 fun DashboardContent(
     navController: NavController,
     pasienData: PasienDetail?,
+    nextReminder: PengingatItem?,
     username: String
 ) {
     val beratBadan = pasienData?.berat_badan ?: 0f
@@ -311,58 +329,72 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            border = CardDefaults.outlinedCardBorder()
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .background(Color(0xFFE3F2FD), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "💊", fontSize = 24.sp)
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = "Pereda nyeri",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                        Text(
-                            text = "1 tablet - setelah makan",
-                            fontSize = 13.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-                Text(
-                    text = "08:00",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            }
+        nextReminder?.let { reminder ->
+            MedicationCardFromApi(reminder = reminder)
+        } ?: run {
+            Text(
+                text = "Tidak ada pengingat obat",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(80.dp))
+    }
+}
+
+@Composable
+fun MedicationCardFromApi(reminder: PengingatItem) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = CardDefaults.outlinedCardBorder()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(Color(0xFFE3F2FD), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "💊", fontSize = 24.sp)
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = reminder.nama_obat,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "${reminder.dosis_kuantitas.toInt()} ${reminder.dosis_unit} - ${reminder.catatan ?: "setelah makan"}",
+                        fontSize = 13.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
+            Text(
+                text = reminder.waktu_alarm.firstOrNull() ?: "00:00",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        }
     }
 }
 

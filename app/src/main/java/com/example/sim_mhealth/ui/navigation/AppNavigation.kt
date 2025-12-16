@@ -16,7 +16,10 @@ import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen1
 import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen2
 import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen3
 import com.example.sim_mhealth.ui.dashboard.DashboardScreen
-import com.example.sim_mhealth.ui.reminder.ReminderScreen
+import com.example.sim_mhealth.ui.reminder.ReminderListScreen
+import com.example.sim_mhealth.ui.reminder.AddReminderScreen
+import com.example.sim_mhealth.ui.reminder.DetailReminderScreen
+import com.example.sim_mhealth.ui.reminder.EditReminderScreen
 import com.example.sim_mhealth.ui.ai.AIScreen
 import com.example.sim_mhealth.ui.profile.ProfileScreen
 
@@ -65,13 +68,25 @@ fun AppNavigation() {
                 DashboardScreen(navController = navController)
             }
             composable("reminder_screen") { _ ->
-                ReminderScreen()
+                ReminderListScreen(navController = navController)
             }
             composable("ai_screen") { _ ->
                 AIScreen()
             }
             composable("profile_screen") { _ ->
                 ProfileScreen(navController = navController)
+            }
+
+            composable("detail_reminder_screen/{reminderId}") { backStackEntry ->
+                val reminderId = backStackEntry.arguments?.getString("reminderId")?.toIntOrNull() ?: 0
+                DetailReminderScreen(navController = navController, reminderId = reminderId)
+            }
+            composable("edit_reminder_screen/{reminderId}") { backStackEntry ->
+                val reminderId = backStackEntry.arguments?.getString("reminderId")?.toIntOrNull() ?: 0
+                EditReminderScreen(navController = navController, reminderId = reminderId)
+            }
+            composable("add_reminder_screen") {
+                AddReminderScreen(navController = navController)
             }
         }
     }

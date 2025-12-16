@@ -38,7 +38,6 @@ fun ProfileScreen(navController: NavController) {
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Form fields
     var email by remember { mutableStateOf("") }
     var tanggalLahir by remember { mutableStateOf("") }
     var beratBadan by remember { mutableStateOf("") }
@@ -48,7 +47,6 @@ fun ProfileScreen(navController: NavController) {
 
     val jenisKelaminOptions = listOf("Laki-laki", "Perempuan")
 
-    // Load data saat screen dibuka
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
         val userId = prefsManager.getUserId()
@@ -58,7 +56,6 @@ fun ProfileScreen(navController: NavController) {
                 repository.getPasienData(token, userId).fold(
                     onSuccess = { response ->
                         pasienData = response.pasien
-                        // Set form values
                         email = response.pasien.email
                         tanggalLahir = formatDateForDisplay(response.pasien.tanggal_lahir)
                         beratBadan = response.pasien.berat_badan?.toString() ?: ""
@@ -91,7 +88,6 @@ fun ProfileScreen(navController: NavController) {
                 .background(Color(0xFFF5F5F5))
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -119,7 +115,6 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Profile Picture & Name
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,13 +147,11 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Form Fields
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
             ) {
-                // Alamat Email
                 Text(
                     text = "Alamat Email",
                     fontSize = 14.sp,
@@ -181,7 +174,6 @@ fun ProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Tanggal Lahir
                 Text(
                     text = "Tanggal Lahir",
                     fontSize = 14.sp,
@@ -205,7 +197,6 @@ fun ProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Berat & Tinggi Badan
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -259,7 +250,6 @@ fun ProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Jenis Kelamin
                 Text(
                     text = "Jenis Kelamin",
                     fontSize = 14.sp,
@@ -306,16 +296,13 @@ fun ProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Simpan Button
                 Button(
                     onClick = {
-                        // Simpan perubahan
                         val token = prefsManager.getToken()
                         val userId = prefsManager.getUserId()
 
                         if (token != null && userId != -1) {
                             scope.launch {
-                                // Convert tanggal lahir ke format YYYY-MM-DD
                                 val dateFormatted = try {
                                     val parts = tanggalLahir.split("-")
                                     if (parts.size == 3) {
@@ -338,7 +325,6 @@ fun ProfileScreen(navController: NavController) {
                                 ).fold(
                                     onSuccess = { response ->
                                         Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
-                                        // Refresh data
                                         pasienData = response.pasien
                                     },
                                     onFailure = { error ->
@@ -371,7 +357,6 @@ fun ProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Logout Button
                 Button(
                     onClick = {
                         prefsManager.clearLoginData()
