@@ -7,9 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:3000/" // Untuk Android Emulator
-    // Gunakan "http://localhost:3000/" untuk physical device di jaringan yang sama
-    // Atau gunakan IP address komputer Anda: "http://192.168.x.x:3000/"
+    private const val BASE_URL = "https://sim.myamusashi.space/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
