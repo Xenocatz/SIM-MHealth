@@ -38,7 +38,7 @@ fun OnBoardingScreen1(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding( 16.dp),
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 LinearProgressIndicator(
@@ -64,16 +64,14 @@ fun OnBoardingScreen1(navController: NavController) {
                 contentDescription = "Welcome",
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Column(Modifier.padding(horizontal = 16.dp)) {
-
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
                 Text(
                     text = "Selamat datang di mHealth!",
-                    style = MaterialTheme.typography.displayLarge,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = DarkGray900,
                     textAlign = TextAlign.Start,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -99,24 +97,25 @@ fun OnBoardingScreen1(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
                     BulletPoint("Menggunakan data untuk rekomendasi AI yang personal.")
                 }
-            }
 
-            Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
 
-            Button(
-                onClick = { navController.navigate("onboarding_screen_2") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "Setuju & Lanjutkan",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Button(
+                    onClick = { navController.navigate("onboarding_screen_2") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Setuju & Lanjutkan",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }
