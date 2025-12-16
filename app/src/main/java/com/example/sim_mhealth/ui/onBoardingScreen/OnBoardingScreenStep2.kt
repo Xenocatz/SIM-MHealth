@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -23,7 +24,6 @@ import com.example.sim_mhealth.R
 
 @Composable
 fun OnBoardingScreen2(navController: NavController) {
-    // Gunakan data dari OnBoardingData object
     var tanggalLahir by remember { mutableStateOf(OnBoardingData.tanggalLahir) }
     var jenisKelamin by remember { mutableStateOf(OnBoardingData.jenisKelamin) }
     var beratBadan by remember { mutableStateOf(OnBoardingData.beratBadan) }
@@ -35,7 +35,6 @@ fun OnBoardingScreen2(navController: NavController) {
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Progress Indicator
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,7 +59,6 @@ fun OnBoardingScreen2(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Illustration
         Image(
             painter = painterResource(id = R.drawable.forest_jogging_group),
             contentDescription = "Health Data",
@@ -71,7 +69,6 @@ fun OnBoardingScreen2(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Tanggal Lahir
         Text(
             text = "Tanggal Lahir",
             fontSize = 14.sp,
@@ -84,6 +81,7 @@ fun OnBoardingScreen2(navController: NavController) {
             value = tanggalLahir,
             onValueChange = { tanggalLahir = it },
             modifier = Modifier.fillMaxWidth(),
+            textStyle = TextStyle(color = Color.DarkGray),
             placeholder = { Text("DD/MM/YYYY", color = Color.LightGray) },
             leadingIcon = {
                 Icon(
@@ -101,7 +99,6 @@ fun OnBoardingScreen2(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Jenis Kelamin
         Text(
             text = "Jenis Kelamin",
             fontSize = 14.sp,
@@ -157,7 +154,6 @@ fun OnBoardingScreen2(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Berat Badan
         Text(
             text = "Berat Badan",
             fontSize = 14.sp,
@@ -170,6 +166,7 @@ fun OnBoardingScreen2(navController: NavController) {
             value = beratBadan,
             onValueChange = { beratBadan = it },
             modifier = Modifier.fillMaxWidth(),
+            textStyle = TextStyle(color = Color.DarkGray),
             placeholder = { Text("kg", color = Color.LightGray) },
             leadingIcon = {
                 Icon(
@@ -188,7 +185,7 @@ fun OnBoardingScreen2(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Tinggi Badan
+
         Text(
             text = "Tinggi Badan",
             fontSize = 14.sp,
@@ -201,6 +198,7 @@ fun OnBoardingScreen2(navController: NavController) {
             value = tinggiBadan,
             onValueChange = { tinggiBadan = it },
             modifier = Modifier.fillMaxWidth(),
+            textStyle = TextStyle(color = Color.DarkGray),
             placeholder = { Text("cm", color = Color.LightGray) },
             leadingIcon = {
                 Icon(
@@ -219,7 +217,6 @@ fun OnBoardingScreen2(navController: NavController) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -245,13 +242,11 @@ fun OnBoardingScreen2(navController: NavController) {
 
             Button(
                 onClick = {
-                    // Simpan data ke OnBoardingData object
                     OnBoardingData.tanggalLahir = tanggalLahir
                     OnBoardingData.jenisKelamin = jenisKelamin
                     OnBoardingData.beratBadan = beratBadan
                     OnBoardingData.tinggiBadan = tinggiBadan
 
-                    // Navigate ke screen 3 tanpa passing data via arguments
                     navController.navigate("onboarding_screen_3")
                 },
                 modifier = Modifier

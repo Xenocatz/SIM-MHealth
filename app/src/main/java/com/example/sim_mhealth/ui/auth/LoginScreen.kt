@@ -23,19 +23,106 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.R
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.AuthRepository
+import com.example.sim_mhealth.ui.theme.*
+import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 import kotlinx.coroutines.launch
+
+enum class AuthSegment {
+    LOGIN, REGISTER
+}
+
+@Composable
+fun AuthSegmentedControl(
+    selectedSegment: AuthSegment,
+    onSegmentSelected: (AuthSegment) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = Color.LightGray.copy(alpha = 0.2f)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = { onSegmentSelected(AuthSegment.LOGIN) },
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedSegment == AuthSegment.LOGIN) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        Color.Transparent
+                    },
+                    contentColor = if (selectedSegment == AuthSegment.LOGIN) {
+                        Color.White
+                    } else {
+                        Color.Gray
+                    }
+                ),
+                elevation = if (selectedSegment == AuthSegment.LOGIN) {
+                    ButtonDefaults.buttonElevation(4.dp)
+                } else {
+                    ButtonDefaults.buttonElevation(0.dp)
+                },
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Login",
+                    fontWeight = if (selectedSegment == AuthSegment.LOGIN) FontWeight.Bold else FontWeight.Normal
+                )
+            }
+
+            Button(
+                onClick = { onSegmentSelected(AuthSegment.REGISTER) },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedSegment == AuthSegment.REGISTER) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        Color.Transparent
+                    },
+                    contentColor = if (selectedSegment == AuthSegment.REGISTER) {
+                        Color.White
+                    } else {
+                        Color.Gray
+                    }
+                ),
+                elevation = if (selectedSegment == AuthSegment.REGISTER) {
+                    ButtonDefaults.buttonElevation(4.dp)
+                } else {
+                    ButtonDefaults.buttonElevation(0.dp)
+                },
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Register",
+                    fontWeight = if (selectedSegment == AuthSegment.REGISTER) FontWeight.Bold else FontWeight.Normal
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun LoginScreen(
@@ -52,8 +139,9 @@ fun LoginScreen(
     var rememberMe by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
+    val currentAuthSegment by remember { mutableStateOf(AuthSegment.LOGIN) }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // Background Image with blur
         Image(
             painter = painterResource(id = R.drawable.forest_jogging_group),
             contentDescription = null,
@@ -63,7 +151,6 @@ fun LoginScreen(
             contentScale = ContentScale.Crop
         )
 
-        // Gradient overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,120 +166,92 @@ fun LoginScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize(),
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Back button
             IconButton(
                 onClick = { navController.popBackStack() },
-                modifier = Modifier.align(Alignment.Start)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(horizontal = 20.dp),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                )
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Title
-            Text(
-                text = "MHealth",
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-            )
-
-            // Subtitle with colored text
-            Text(
-                text = buildAnnotatedString {
-                    append("Mulai ")
-                    withStyle(style = SpanStyle(color = Color(0xFF4CAF50))) {
-                        append("Rutinitas Sehat")
-                    }
-                    append(" Anda")
-                },
-                fontSize = 16.sp,
-                color = Color.White
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // White card container
-            Card(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(24.dp),
+                    .padding(horizontal = 24.dp)
+            ) {
+                Text(
+                    text = "MHealth",
+                    fontSize = 48.sp,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Primary50,
+                )
+
+                Text(
+                    text = buildAnnotatedString {
+                        append("Mulai ")
+                        withStyle(style = SpanStyle(color = MintGreen500)) {
+                            append("Rutinitas Sehat")
+                        }
+                        append(" Anda")
+                    },
+                    fontSize = 22.sp,
+                    color = Color.White,
+                    style = MaterialTheme.typography.displayLarge,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Card(
+                modifier = Modifier
+                    .fillMaxSize(),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Tab selector
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                    ) {
-                        Button(
-                            onClick = { },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = Color.Black
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(4.dp),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(
-                                text = "Login",
-                                fontWeight = FontWeight.Bold
-                            )
+                    AuthSegmentedControl(
+                        selectedSegment = currentAuthSegment,
+                        onSegmentSelected = { segment ->
+                            if (segment == AuthSegment.REGISTER) {
+                                navController.navigate("register_screen")
+                            }
                         }
-
-                        Button(
-                            onClick = { navController.navigate("register_screen") },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.Gray
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(0.dp),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(
-                                text = "Register",
-                                fontWeight = FontWeight.Normal
-                            )
-                        }
-                    }
+                    )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Username field
                     Text(
                         text = "Username",
                         fontSize = 14.sp,
                         color = Color.Gray,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("gilangramadahan") },
+                        placeholder = { Text("Masukkan Username Anda") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Person,
@@ -200,6 +259,7 @@ fun LoginScreen(
                                 tint = Color(0xFF2196F3)
                             )
                         },
+                        textStyle = TextStyle(color = Color.DarkGray),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF2196F3),
@@ -211,18 +271,20 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Password field
                     Text(
                         text = "Password",
                         fontSize = 14.sp,
                         color = Color.Gray,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text("••••••••") },
+                        textStyle = TextStyle(color = Color.DarkGray),
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
@@ -246,12 +308,12 @@ fun LoginScreen(
                             unfocusedBorderColor = Color.LightGray
                         ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Remember me and Forgot password
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -271,16 +333,19 @@ fun LoginScreen(
                             onClick = { /* Handle forgot password */ },
                             enabled = !isLoading
                         ) {
-                            Text(text = "Lupa Password?", fontSize = 14.sp, color = Color(0xFF2196F3))
+                            Text(
+                                text = "Lupa Password?",
+                                fontSize = 14.sp,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Primary500
+                            )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Login button
                     Button(
                         onClick = {
-                            // Validasi input
                             when {
                                 username.isBlank() -> {
                                     Toast.makeText(context, "Silahkan isi username", Toast.LENGTH_SHORT).show()
@@ -297,7 +362,6 @@ fun LoginScreen(
                                 repository.login(username.trim(), password).fold(
                                     onSuccess = { response ->
                                         if (response.success && response.data != null) {
-                                            // Simpan data login
                                             prefsManager.saveLoginData(
                                                 token = response.data.token,
                                                 userId = response.data.user.id_pasien,
@@ -307,12 +371,11 @@ fun LoginScreen(
 
                                             Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
 
-
                                             navController.navigate("home_screen") {
                                                 popUpTo("intro_screen") { inclusive = true }
                                             }
                                         } else {
-                                            Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, "Login gagal: ${response.message}", Toast.LENGTH_SHORT).show()
                                         }
                                         isLoading = false
                                     },
@@ -343,8 +406,8 @@ fun LoginScreen(
                         } else {
                             Text(
                                 text = "Login",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = Color.White
                             )
                         }
@@ -352,5 +415,13 @@ fun LoginScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    SIMMHealthTheme {
+        LoginScreen(navController = rememberNavController())
     }
 }

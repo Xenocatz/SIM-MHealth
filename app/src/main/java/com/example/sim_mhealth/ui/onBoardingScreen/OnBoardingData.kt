@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-// Simple ViewModel untuk menyimpan data sementara antar screen
 object OnBoardingData {
     var tanggalLahir by mutableStateOf("")
     var jenisKelamin by mutableStateOf("")

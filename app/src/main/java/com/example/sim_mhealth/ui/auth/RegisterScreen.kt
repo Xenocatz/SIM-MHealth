@@ -4,12 +4,15 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,21 +24,25 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.R
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.AuthRepository
+import com.example.sim_mhealth.ui.theme.MintGreen500
+import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     navController: NavController
@@ -44,6 +51,7 @@ fun RegisterScreen(
     val scope = rememberCoroutineScope()
     val repository = remember { AuthRepository() }
     val prefsManager = remember { PreferencesManager(context) }
+
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -52,8 +60,9 @@ fun RegisterScreen(
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
+    val currentAuthSegment by remember { mutableStateOf(AuthSegment.REGISTER) }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // Background Image with blur
         Image(
             painter = painterResource(id = R.drawable.forest_jogging_group),
             contentDescription = null,
@@ -63,7 +72,6 @@ fun RegisterScreen(
             contentScale = ContentScale.Crop
         )
 
-        // Gradient overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -78,121 +86,88 @@ fun RegisterScreen(
         )
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(60.dp))
 
-            // Back button
             IconButton(
                 onClick = { navController.popBackStack() },
-                modifier = Modifier.align(Alignment.Start)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(horizontal = 20.dp),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                )
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Title
-            Text(
-                text = "MHealth",
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-            )
-
-            // Subtitle with colored text
-            Text(
-                text = buildAnnotatedString {
-                    append("Mulai ")
-                    withStyle(style = SpanStyle(color = Color(0xFF4CAF50))) {
-                        append("Rutinitas Sehat")
-                    }
-                    append(" Anda")
-                },
-                fontSize = 14.sp,
-                color = Color.White
-            )
-
             Spacer(modifier = Modifier.height(20.dp))
 
-            // White card container with scroll
-            Card(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(),
-                shape = RoundedCornerShape(24.dp),
+                    .padding(horizontal = 24.dp)
+            ) {
+                Text(
+                    text = "MHealth",
+                    fontSize = 48.sp,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.White,
+                )
+
+                Text(
+                    text = buildAnnotatedString {
+                        append("Mulai ")
+                        withStyle(style = SpanStyle(color = MintGreen500)) {
+                            append("Rutinitas Sehat")
+                        }
+                        append(" Anda")
+                    },
+                    fontSize = 22.sp,
+                    color = Color.White,
+                    style = MaterialTheme.typography.displayLarge,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Card(
+                modifier = Modifier
+                    .fillMaxSize(),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
                         .padding(24.dp)
                 ) {
-                    // Tab selector
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                    ) {
-                        Button(
-                            onClick = { navController.popBackStack() },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.Gray
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(0.dp),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(
-                                text = "Login",
-                                fontWeight = FontWeight.Normal
-                            )
+                    AuthSegmentedControl(
+                        selectedSegment = currentAuthSegment,
+                        onSegmentSelected = { segment ->
+                            if (segment == AuthSegment.LOGIN) {
+                                navController.popBackStack()
+                            }
                         }
+                    )
 
-                        Button(
-                            onClick = { },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = Color.Black
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(4.dp),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(
-                                text = "Register",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Username field
                     Text(
                         text = "Username",
                         fontSize = 14.sp,
-                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(color = Color.DarkGray),
                         placeholder = { Text("alpitraonichan") },
                         leadingIcon = {
                             Icon(
@@ -210,19 +185,18 @@ fun RegisterScreen(
                         singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    // Email field
                     Text(
                         text = "Email",
                         fontSize = 14.sp,
-                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(color = Color.DarkGray),
                         placeholder = { Text("health_care@gmail.com") },
                         leadingIcon = {
                             Icon(
@@ -241,13 +215,11 @@ fun RegisterScreen(
                         singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    // Password field
                     Text(
                         text = "Password",
                         fontSize = 14.sp,
-                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -278,16 +250,15 @@ fun RegisterScreen(
                             unfocusedBorderColor = Color.LightGray
                         ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    // Confirm Password field
                     Text(
                         text = "Ulangi Password",
                         fontSize = 14.sp,
-                        color = Color.Gray,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     OutlinedTextField(
@@ -318,10 +289,11 @@ fun RegisterScreen(
                             unfocusedBorderColor = Color.LightGray
                         ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     // Register button
                     Button(
@@ -354,7 +326,6 @@ fun RegisterScreen(
                                 ).fold(
                                     onSuccess = { response ->
                                         if (response.success && response.data != null) {
-                                            // Simpan data login dari response registrasi
                                             prefsManager.saveLoginData(
                                                 token = response.data.token,
                                                 userId = response.data.user.id_pasien,
@@ -364,7 +335,6 @@ fun RegisterScreen(
 
                                             Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
 
-                                            // Navigate ke onboarding screen setelah registrasi berhasil
                                             navController.navigate("onboarding_screen_1") {
                                                 popUpTo("intro_screen") { inclusive = true }
                                             }
@@ -407,10 +377,16 @@ fun RegisterScreen(
                             )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun RegisterScreenPreview() {
+    SIMMHealthTheme {
+        RegisterScreen(navController = rememberNavController())
     }
 }

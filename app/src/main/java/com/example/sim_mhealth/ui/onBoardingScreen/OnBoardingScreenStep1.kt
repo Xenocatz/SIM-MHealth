@@ -24,7 +24,6 @@ fun OnBoardingScreen1(navController: NavController) {
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Progress Indicator
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -49,7 +48,6 @@ fun OnBoardingScreen1(navController: NavController) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Illustration
         Image(
             painter = painterResource(id = R.drawable.forest_jogging_group),
             contentDescription = "Welcome",
@@ -60,7 +58,6 @@ fun OnBoardingScreen1(navController: NavController) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Title
         Text(
             text = "Selamat datang di mHealth!",
             fontSize = 24.sp,
@@ -71,7 +68,6 @@ fun OnBoardingScreen1(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Description
         Text(
             text = "mHealth membantu mengelola obat, memantau tanda vital, dan memberi saran gaya hidup berbasis AI sebelum lanjut, kami perlu izin untuk menyimpan data kesehatan Anda. Jangan khawatir, semua informasi Privasi Anda penting, data hanya dipakai untuk layanan dan tidak dibagikan tanpa persetujuan.",
             fontSize = 14.sp,
@@ -82,7 +78,6 @@ fun OnBoardingScreen1(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Bullet Points
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start
@@ -96,7 +91,6 @@ fun OnBoardingScreen1(navController: NavController) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Button
         Button(
             onClick = { navController.navigate("onboarding_screen_2") },
             modifier = Modifier

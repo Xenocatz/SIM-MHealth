@@ -15,7 +15,7 @@ fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavItem("Beranda", Icons.Default.Home, "home_screen"),
         BottomNavItem("Pengingat", Icons.Default.Notifications, "reminder_screen"),
-        BottomNavItem("AI", Icons.Default.Build, "ai_screen"), // Ganti dengan ikon AI custom jika perlu
+        BottomNavItem("AI", Icons.Default.Build, "ai_screen"),
         BottomNavItem("Profil", Icons.Default.Person, "profile_screen")
     )
 

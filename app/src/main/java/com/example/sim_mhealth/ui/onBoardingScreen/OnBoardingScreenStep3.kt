@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,7 +31,6 @@ fun OnBoardingScreen3(
     val repository = remember { OnBoardingRepository() }
     val prefsManager = remember { PreferencesManager(context) }
 
-    // Load data dari OnBoardingData object
     var hasHealthCondition by remember { mutableStateOf(OnBoardingData.hasHealthCondition) }
     var jenisKondisi by remember { mutableStateOf("") }
     var sejakKapan by remember { mutableStateOf(OnBoardingData.sejakKapan) }
@@ -43,7 +43,6 @@ fun OnBoardingScreen3(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Progress Indicator
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,7 +67,6 @@ fun OnBoardingScreen3(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Title
         Text(
             text = "Ada kondisi kesehatan yang perlu kami tahu?",
             fontSize = 20.sp,
@@ -79,7 +77,6 @@ fun OnBoardingScreen3(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Description
         Text(
             text = "Memberi tahu kami membantu aplikasi memberi peringatan dan rekomendasi yang lebih aman.",
             fontSize = 14.sp,
@@ -90,7 +87,6 @@ fun OnBoardingScreen3(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Question: Apakah Anda memiliki riwayat kondisi medis?
         Text(
             text = "Apakah Anda memiliki riwayat kondisi medis?",
             fontSize = 14.sp,
@@ -148,7 +144,6 @@ fun OnBoardingScreen3(
             }
         }
 
-        // Show conditions if user has health condition
         if (hasHealthCondition == true) {
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -170,11 +165,11 @@ fun OnBoardingScreen3(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // TextField untuk input kondisi kesehatan dinamis
             OutlinedTextField(
                 value = jenisKondisi,
                 onValueChange = { jenisKondisi = it },
                 modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(color = Color.DarkGray),
                 placeholder = {
                     Text(
                         "Contoh: Diabetes, Hipertensi, Asma",
@@ -193,7 +188,6 @@ fun OnBoardingScreen3(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Helper text
             Text(
                 text = "Tips: Pisahkan setiap kondisi dengan koma (,)",
                 fontSize = 11.sp,
@@ -204,7 +198,6 @@ fun OnBoardingScreen3(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Sejak kapan?
             Text(
                 text = "Sejak kapan?",
                 fontSize = 14.sp,
@@ -226,6 +219,7 @@ fun OnBoardingScreen3(
                 value = sejakKapan,
                 onValueChange = { sejakKapan = it },
                 modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(color = Color.DarkGray),
                 placeholder = { Text("mm/yyyy", color = Color.LightGray) },
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -237,7 +231,6 @@ fun OnBoardingScreen3(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Info text
         Text(
             text = "Informasi ini tersimpan aman dan hanya digunakan untuk memberikan saran yang aman. Kami tidak membagikannya tanpa izin.",
             fontSize = 12.sp,
@@ -248,7 +241,6 @@ fun OnBoardingScreen3(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -275,7 +267,6 @@ fun OnBoardingScreen3(
 
             Button(
                 onClick = {
-                    // Validasi
                     if (hasHealthCondition == null) {
                         Toast.makeText(context, "Pilih apakah Anda memiliki kondisi medis", Toast.LENGTH_SHORT).show()
                         return@Button
@@ -299,7 +290,6 @@ fun OnBoardingScreen3(
                             return@launch
                         }
 
-                        // Ambil data dari OnBoardingData object
                         val tanggalLahir = OnBoardingData.tanggalLahir
                         val jenisKelamin = OnBoardingData.jenisKelamin
                         val beratBadan = OnBoardingData.beratBadan
@@ -322,7 +312,7 @@ fun OnBoardingScreen3(
                         // Convert jadi: ["Diabetes", "Hipertensi", "Asma"]
                         val jenisKondisiArray = if (hasHealthCondition == true && jenisKondisi.isNotBlank()) {
                             jenisKondisi
-                                .split(",")                    // Split by comma
+                                .split(",")        // Split by comma
                                 .map { it.trim() }             // Trim whitespace
                                 .filter { it.isNotBlank() }    // Remove empty strings
                         } else {
@@ -335,7 +325,6 @@ fun OnBoardingScreen3(
                             null
                         }
 
-                        // Kirim semua data sekaligus
                         repository.updateProfile(
                             token = token,
                             idPasien = userId,

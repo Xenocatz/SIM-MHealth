@@ -43,7 +43,6 @@ fun DashboardScreen(navController: NavController) {
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Load data saat screen dibuka
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
         val userId = prefsManager.getUserId()
@@ -169,7 +168,6 @@ fun DashboardContent(
                     )
                 }
 
-                // Calorie card
                 Card(
                     modifier = Modifier
                         .width(140.dp)
@@ -216,7 +214,6 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Status kamu saat ini
         Text(
             text = "Status kamu saat ini",
             fontSize = 18.sp,
@@ -234,7 +231,6 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Status grid
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -249,7 +245,6 @@ fun DashboardContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Pola tidur
                     StatusCard(
                         icon = Icons.Default.Home,
                         iconColor = Color(0xFF64B5F6),
@@ -261,7 +256,6 @@ fun DashboardContent(
                         modifier = Modifier.weight(1f)
                     )
 
-                    // BMI
                     StatusCard(
                         icon = Icons.Default.Favorite,
                         iconColor = Color(0xFF64B5F6),
@@ -280,7 +274,6 @@ fun DashboardContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Berat badan
                     StatusCard(
                         icon = Icons.Default.FitnessCenter,
                         iconColor = Color(0xFF424242),
@@ -292,7 +285,6 @@ fun DashboardContent(
                         modifier = Modifier.weight(1f)
                     )
 
-                    // Tinggi badan
                     StatusCard(
                         icon = Icons.Default.Person,
                         iconColor = Color(0xFF64B5F6),
@@ -309,7 +301,6 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Konsumsi obat selanjutnya
         Text(
             text = "Konsumsi obat selanjutnya",
             fontSize = 18.sp,
@@ -320,7 +311,6 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Medication card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -445,7 +435,6 @@ fun StatusCard(
     }
 }
 
-// Helper functions
 fun calculateBMI(weight: Float, height: Float): Float {
     if (weight <= 0 || height <= 0) return 0f
     val heightInMeters = height / 100
