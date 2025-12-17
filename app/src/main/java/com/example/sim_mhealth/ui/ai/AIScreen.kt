@@ -22,10 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import com.example.sim_mhealth.BuildConfig
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.ui.theme.Gray700
+import com.google.ai.client.generativeai.type.ServerException
 import dev.jeziellago.compose.markdowntext.MarkdownText
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 data class ChatMessage(
@@ -35,6 +38,30 @@ data class ChatMessage(
     val timestamp: Long = System.currentTimeMillis()
 )
 
+// Rate Limiter Class
+class RateLimiter(
+    private val maxRequests: Int = 5,
+    private val timeWindowMs: Long = 60_000L
+) {
+    private val requests = mutableListOf<Long>()
+
+    fun canMakeRequest(): Boolean {
+        val now = System.currentTimeMillis()
+        requests.removeAll { it < now - timeWindowMs }
+        return requests.size < maxRequests
+    }
+
+    fun recordRequest() {
+        requests.add(System.currentTimeMillis())
+    }
+
+    fun getRemainingRequests(): Int {
+        val now = System.currentTimeMillis()
+        requests.removeAll { it < now - timeWindowMs }
+        return maxRequests - requests.size
+    }
+}
+
 @Composable
 fun AIScreen(navController: NavController) {
     val context = LocalContext.current
@@ -43,6 +70,12 @@ fun AIScreen(navController: NavController) {
     var messageText by remember { mutableStateOf("") }
     var chatMessages by remember { mutableStateOf(listOf<ChatMessage>()) }
     var isLoading by remember { mutableStateOf(false) }
+
+    // Rate limiting & optimization
+    val responseCache = remember { mutableStateMapOf<String, String>() }
+    val rateLimiter = remember { RateLimiter(maxRequests = 15, timeWindowMs = 60_000L) }
+    var lastSendTime by remember { mutableStateOf(0L) }
+    val minTimeBetweenSends = 2000L
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -92,7 +125,7 @@ fun AIScreen(navController: NavController) {
                     color = Color.Black
                 )
                 Text(
-                    text = "Gemini 2.5 Flash",
+                    text = "Gemini 2.0 Flash • ${rateLimiter.getRemainingRequests()}/15 request",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
@@ -197,7 +230,11 @@ fun AIScreen(navController: NavController) {
             ) {
                 OutlinedTextField(
                     value = messageText,
-                    onValueChange = { messageText = it },
+                    onValueChange = {
+                        if (it.length <= 500) { // Batasi 500 karakter
+                            messageText = it
+                        }
+                    },
                     modifier = Modifier.weight(1f),
                     textStyle = TextStyle(color = Gray700),
                     placeholder = {
@@ -214,12 +251,42 @@ fun AIScreen(navController: NavController) {
                         disabledBorderColor = Color(0xFFE0E0E0)
                     ),
                     maxLines = 4,
-                    enabled = !isLoading
+                    enabled = !isLoading,
+                    supportingText = {
+                        Text(
+                            text = "${messageText.length}/500",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
                 )
 
                 IconButton(
                     onClick = {
+                        val currentTime = System.currentTimeMillis()
+
+                        // Check debounce
+                        if (currentTime - lastSendTime < minTimeBetweenSends) {
+                            return@IconButton
+                        }
+
+                        // Check rate limit
+                        if (!rateLimiter.canMakeRequest()) {
+                            chatMessages = chatMessages + ChatMessage(
+                                id = System.currentTimeMillis().toString(),
+                                text = "⚠️ Terlalu banyak request. Kamu sudah mencapai limit 15 request per menit. Tunggu sebentar ya!",
+                                isFromUser = false
+                            )
+                            scope.launch {
+                                listState.animateScrollToItem(chatMessages.size)
+                            }
+                            return@IconButton
+                        }
+
                         if (messageText.isNotBlank() && !isLoading) {
+                            lastSendTime = currentTime
+                            rateLimiter.recordRequest()
+
                             val userMessage = ChatMessage(
                                 id = System.currentTimeMillis().toString(),
                                 text = messageText,
@@ -227,23 +294,43 @@ fun AIScreen(navController: NavController) {
                             )
                             chatMessages = chatMessages + userMessage
 
-                            val query = messageText
+                            val query = messageText.trim()
+                            val cacheKey = query.lowercase()
                             messageText = ""
 
                             scope.launch {
                                 listState.animateScrollToItem(chatMessages.size)
                             }
 
-                            isLoading = true
                             scope.launch {
+                                isLoading = true
                                 try {
-                                    val generativeModel = GenerativeModel(
-                                        modelName = "gemini-2.0-flash-lite",
-                                        apiKey = BuildConfig.GEMINI_API_KEY
-                                    )
+                                    val cachedResponse = responseCache[cacheKey]
+                                    if (cachedResponse != null) {
+                                        val aiResponse = ChatMessage(
+                                            id = System.currentTimeMillis().toString(),
+                                            text = "📋 *(dari cache)*\n\n$cachedResponse",
+                                            isFromUser = false
+                                        )
+                                        chatMessages = chatMessages + aiResponse
+                                        isLoading = false
+                                        scope.launch {
+                                            listState.animateScrollToItem(chatMessages.size)
+                                        }
+                                        return@launch
+                                    }
 
-                                    val response = generativeModel.generateContent(query)
-                                    val aiText = response.text ?: "Maaf, tidak ada response"
+                                    // Generate with optimized settings
+                                    val aiText = generateWithRetry(query)
+
+                                    // Save to cache
+                                    responseCache[cacheKey] = aiText
+
+                                    // Keep cache size manageable (max 50 items)
+                                    if (responseCache.size > 50) {
+                                        val oldestKey = responseCache.keys.first()
+                                        responseCache.remove(oldestKey)
+                                    }
 
                                     val aiResponse = ChatMessage(
                                         id = System.currentTimeMillis().toString(),
@@ -251,10 +338,18 @@ fun AIScreen(navController: NavController) {
                                         isFromUser = false
                                     )
                                     chatMessages = chatMessages + aiResponse
+
+                                } catch (e: RateLimitException) {
+                                        chatMessages = chatMessages + ChatMessage(
+                                            id = System.currentTimeMillis().toString(),
+                                            text = "⏱️ ${e.message}\n\nSisa kuota menit ini: ${rateLimiter.getRemainingRequests()}/15",
+                                            isFromUser = false
+                                        )
+                                        isLoading = false
                                 } catch (e: Exception) {
                                     val errorResponse = ChatMessage(
                                         id = System.currentTimeMillis().toString(),
-                                        text = "Maaf, terjadi kesalahan: ${e.message}",
+                                        text = "❌ Maaf, terjadi kesalahan: ${e.message}",
                                         isFromUser = false
                                     )
                                     chatMessages = chatMessages + errorResponse
@@ -292,6 +387,60 @@ fun AIScreen(navController: NavController) {
         }
     }
 }
+
+// Generate with retry and exponential backoff
+suspend fun generateWithRetry(
+    query: String,
+    maxRetries: Int = 3
+): String {
+    var lastException: Exception? = null
+
+    repeat(maxRetries) { attempt ->
+        try {
+            val generativeModel = GenerativeModel(
+                modelName = "gemini-2.0-flash-lite",
+                apiKey = BuildConfig.GEMINI_API_KEY,
+                systemInstruction = content {
+                    text("""
+                        Kamu adalah asisten kesehatan Indonesia yang profesional dan ramah.
+                        
+                        ATURAN PENTING:
+                        - Berikan jawaban yang singkat, padat, dan jelas
+                        - Batasi jawaban maksimal 150 kata kecuali pertanyaan memerlukan penjelasan detail
+                        - Gunakan bahasa Indonesia yang mudah dipahami
+                        - Fokus pada informasi yang paling penting
+                        - Jika perlu penjelasan panjang, buat poin-poin ringkas
+                        - Selalu ingatkan untuk konsultasi dengan dokter untuk diagnosa yang akurat
+                    """.trimIndent())
+                }
+            )
+
+            val response = generativeModel.generateContent(query)
+            return response.text ?: "Maaf, tidak ada response"
+
+        } catch (e: ServerException) {
+            // TANGKAP ERROR 429 SPECIFICALLY
+            if (e.message?.contains("429") == true || e.message?.contains("quota") == true) {
+                lastException = e
+                val waitTime = 60_000L * (attempt + 1) // 1 menit, 2 menit, 3 menit
+                if (attempt < maxRetries - 1) {
+                    // TAMPILKAN PESAN KE USER
+                    throw RateLimitException("Terkena rate limit server. Akan coba lagi dalam ${waitTime / 1000} detik...", waitTime)
+                }
+            } else {
+                lastException = e
+                delay(1000L * (attempt + 1))
+            }
+        } catch (e: Exception) {
+            lastException = e
+            delay(1000L * (attempt + 1))
+        }
+    }
+
+    throw lastException ?: Exception("Unknown error")
+}
+
+class RateLimitException(message: String, val waitTimeMs: Long) : Exception(message)
 
 @Composable
 fun ChatMessageBubble(message: ChatMessage) {
@@ -339,7 +488,6 @@ fun ChatMessageBubble(message: ChatMessage) {
                 modifier = Modifier.padding(12.dp)
             ) {
                 if (message.isFromUser) {
-                    // User message: plain text
                     Text(
                         text = message.text,
                         fontSize = 14.sp,
@@ -347,7 +495,6 @@ fun ChatMessageBubble(message: ChatMessage) {
                         lineHeight = 20.sp
                     )
                 } else {
-                    // AI message: render as markdown
                     MarkdownText(
                         markdown = message.text,
                         fontSize = 14.sp,
