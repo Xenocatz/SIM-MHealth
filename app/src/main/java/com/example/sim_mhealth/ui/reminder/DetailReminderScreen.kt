@@ -37,7 +37,6 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
     var isLoading by remember { mutableStateOf(true) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // Load data
     LaunchedEffect(reminderId) {
         val token = prefsManager.getToken()
 
@@ -72,7 +71,6 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,7 +114,6 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
                     .verticalScroll(rememberScrollState())
                     .padding(24.dp)
             ) {
-                // Medicine Icon & Name
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -148,7 +145,6 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Info Cards
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
@@ -186,7 +182,6 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Catatan
                 if (!reminderDetail!!.catatan.isNullOrBlank()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -215,7 +210,6 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                // Jadwal Hari Ini
                 Text(
                     text = "Jadwal Hari Ini",
                     fontSize = 18.sp,
@@ -236,10 +230,8 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Buttons
                 Button(
                     onClick = {
-                        // Mark as done
                         Toast.makeText(context, "Tandai sudah dikonsumsi", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier
@@ -289,7 +281,6 @@ fun DetailReminderScreen(navController: NavController, reminderId: Int) {
             }
         }
 
-        // Delete Confirmation Dialog
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },

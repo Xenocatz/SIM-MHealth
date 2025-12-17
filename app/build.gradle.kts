@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -14,6 +16,15 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+
+        val properties = Properties()
+        val localPropertiesFile = project.rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+
+        val apiKey = properties.getProperty("GEMINI_API_KEY") ?: ""
+        buildConfigField("String", "GEMINI_API_KEY", "\"$apiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -36,6 +47,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -59,9 +71,12 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
 
     // gemini
-    implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
+    implementation("com.google.ai.client.generativeai:generativeai:0.2.0")
+
+    implementation("com.github.jeziellago:compose-markdown:0.3.6")
     // Navigation
     implementation("com.google.accompanist:accompanist-navigation-animation:0.36.0")
     implementation("androidx.navigation:navigation-compose:2.7.5")

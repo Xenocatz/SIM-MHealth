@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +45,14 @@ fun ReminderListScreen(navController: NavController) {
     var selectedReminder by remember { mutableStateOf<PengingatItem?>(null) }
     var showBottomSheet by remember { mutableStateOf(false) }
 
+    val listState = rememberLazyListState()
+
+    val datesForMonth = remember(selectedDate) { getDatesForMonth(selectedDate) }
+    val todayIndex = remember(datesForMonth) {
+        val today = Calendar.getInstance()
+        datesForMonth.indexOfFirst { isSameDay(it, today) }
+    }
+
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
         val userId = prefsManager.getUserId()
@@ -63,6 +72,11 @@ fun ReminderListScreen(navController: NavController) {
             }
         } else {
             isLoading = false
+        }
+
+        if (todayIndex >= 0) {
+            kotlinx.coroutines.delay(50)
+            listState.scrollToItem(todayIndex)
         }
     }
 
@@ -99,7 +113,7 @@ fun ReminderListScreen(navController: NavController) {
                     modifier = Modifier.align(Alignment.CenterEnd),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    IconButton(onClick = { /* Handle notification */ }) {
+                    IconButton(onClick = { navController.navigate("notification_list") }) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = "Notifications",
@@ -145,10 +159,11 @@ fun ReminderListScreen(navController: NavController) {
 
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
+                        state = listState,
                         contentPadding = PaddingValues(horizontal = 20.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(getDatesForMonth(selectedDate)) { date ->
+                        items(datesForMonth) { date ->
                             DateChip(
                                 date = date,
                                 isSelected = isSameDay(date, selectedDate),
@@ -175,6 +190,28 @@ fun ReminderListScreen(navController: NavController) {
                         title = "Siang",
                         icon = "☀️",
                         reminders = reminderList.filter { isPeriod(it.waktu_alarm, "siang") },
+                        onReminderClick = { reminder ->
+                            selectedReminder = reminder
+                            showBottomSheet = true
+                        }
+                    )
+
+                    ReminderSection(
+                        title = "Sore",
+                        icon = "🌇",
+                        reminders = reminderList.filter { isPeriod(it.waktu_alarm, "sore") },
+                        onReminderClick = { reminder ->
+                            selectedReminder = reminder
+                            showBottomSheet = true
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ReminderSection(
+                        title = "Malam",
+                        icon = "🌃",
+                        reminders = reminderList.filter { isPeriod(it.waktu_alarm, "malam") },
                         onReminderClick = { reminder ->
                             selectedReminder = reminder
                             showBottomSheet = true

@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
@@ -123,7 +124,7 @@ fun DateInputWithCalendarPicker(
                         showDatePicker = false
                     }
                 ) {
-                    Text("OK")
+                    Text("OK", fontFamily = martel)
                 }
             },
             dismissButton = {
@@ -132,11 +133,13 @@ fun DateInputWithCalendarPicker(
                         showDatePicker = false
                     }
                 ) {
-                    Text("Batal")
+                    Text("Batal", fontFamily = martel)
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            ProvideTextStyle(value = TextStyle(fontFamily = martel)) {
+                DatePicker(state = datePickerState)
+            }
         }
     }
 }

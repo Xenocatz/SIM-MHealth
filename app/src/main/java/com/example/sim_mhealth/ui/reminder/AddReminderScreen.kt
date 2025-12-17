@@ -26,6 +26,7 @@ import com.example.sim_mhealth.data.api.CreatePengingatRequest
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ReminderRepository
 import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
+import com.example.sim_mhealth.ui.theme.martel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +39,6 @@ fun AddReminderScreen(navController: NavController) {
 
     var isSaving by remember { mutableStateOf(false) }
 
-    // Form fields
     var namaObat by remember { mutableStateOf("") }
     var dosisKuantitas by remember { mutableStateOf("") }
     var dosisUnit by remember { mutableStateOf("tablet") }
@@ -52,6 +52,16 @@ fun AddReminderScreen(navController: NavController) {
     var expandedUnit by remember { mutableStateOf(false) }
     var expandedFrekuensi by remember { mutableStateOf(false) }
 
+    var showTimePicker by remember { mutableStateOf(false) }
+    var selectedTimeIndex by remember { mutableStateOf(-1) }
+    var initialHour by remember { mutableStateOf(8) }
+    var initialMinute by remember { mutableStateOf(0) }
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialHour,
+        initialMinute = initialMinute,
+        is24Hour = true
+    )
+
     val dosisUnitOptions = listOf("tablet", "kapsul", "ml", "mg", "tetes")
     val frekuensiOptions = listOf("1x Sehari", "2x Sehari", "3x Sehari", "4x Sehari", "Sesuai kebutuhan")
 
@@ -60,7 +70,6 @@ fun AddReminderScreen(navController: NavController) {
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
     ) {
-        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -86,7 +95,6 @@ fun AddReminderScreen(navController: NavController) {
             )
             TextButton(
                 onClick = {
-                    // Validasi
                     when {
                         namaObat.isBlank() -> {
                             Toast.makeText(context, "Nama obat harus diisi", Toast.LENGTH_SHORT).show()
@@ -162,7 +170,6 @@ fun AddReminderScreen(navController: NavController) {
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp)
         ) {
-            // Medicine Icon with upload
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -190,7 +197,6 @@ fun AddReminderScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Nama Obat
             Text(
                 text = "Nama Obat*",
                 fontSize = 14.sp,
@@ -214,7 +220,6 @@ fun AddReminderScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Dosis
             Text(
                 text = "Dosis*",
                 fontSize = 14.sp,
@@ -365,6 +370,8 @@ fun AddReminderScreen(navController: NavController) {
                 )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -374,8 +381,7 @@ fun AddReminderScreen(navController: NavController) {
                     text = "Waktu*",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    color = Color.Black
                 )
 
                 IconButton(
@@ -401,19 +407,55 @@ fun AddReminderScreen(navController: NavController) {
                     ) {
                         OutlinedTextField(
                             value = time,
-                            onValueChange = { newTime ->
-                                waktuAlarm[index] = newTime
-                            },
+                            onValueChange = { },
                             modifier = Modifier.weight(1f),
-                            textStyle = TextStyle(color = Color.DarkGray),
+                            textStyle = TextStyle(
+                                color = Color.DarkGray,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            ),
                             placeholder = { Text("--:--") },
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFF2196F3),
                                 unfocusedBorderColor = Color(0xFFE0E0E0)
                             ),
-                            singleLine = true
+                            singleLine = true,
+                            readOnly = true,
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        selectedTimeIndex = index
+                                        val parts = time.split(":")
+                                        if (parts.size == 2) {
+                                            initialHour = parts[0].toIntOrNull() ?: 8
+                                            initialMinute = parts[1].toIntOrNull() ?: 0
+                                        }
+                                        showTimePicker = true
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AccessTime,
+                                        contentDescription = "Pilih Waktu",
+                                        tint = Color(0xFF2196F3)
+                                    )
+                                }
+                            }
                         )
+
+                        if (waktuAlarm.size > 1) {
+                            IconButton(
+                                onClick = {
+                                    waktuAlarm.removeAt(index)
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Hapus Waktu",
+                                    tint = Color(0xFFE57373)
+                                )
+                            }
+                        }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -421,7 +463,6 @@ fun AddReminderScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Catatan
             Text(
                 text = "Catatan",
                 fontSize = 14.sp,
@@ -436,6 +477,7 @@ fun AddReminderScreen(navController: NavController) {
                     .fillMaxWidth()
                     .height(120.dp),
                 textStyle = TextStyle(color = Color.DarkGray),
+                placeholder = { Text("Tambahkan catatan (opsional)") },
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFF2196F3),
@@ -446,5 +488,65 @@ fun AddReminderScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(100.dp))
         }
+    }
+
+    if (showTimePicker) {
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            containerColor = Color.White,
+            title = {
+                Text(
+                    text = "Pilih Waktu Alarm",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TimePicker(
+                        state = timePickerState,
+                        colors = TimePickerDefaults.colors(
+                            clockDialColor = Color(0xFFE3F2FD),
+                            clockDialSelectedContentColor = Color.White,
+                            clockDialUnselectedContentColor = Color.DarkGray,
+                            selectorColor = Color(0xFF2196F3),
+                            timeSelectorSelectedContainerColor = Color(0xFF2196F3),
+                            timeSelectorUnselectedContainerColor = Color(0xFFE0E0E0),
+                            timeSelectorSelectedContentColor = Color.White,
+                            timeSelectorUnselectedContentColor = Color.DarkGray
+                        )
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (selectedTimeIndex >= 0) {
+                            val hour = timePickerState.hour.toString().padStart(2, '0')
+                            val minute = timePickerState.minute.toString().padStart(2, '0')
+                            waktuAlarm[selectedTimeIndex] = "$hour:$minute"
+                        }
+                        showTimePicker = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2196F3)
+                    )
+                ) {
+                    Text("Simpan", fontFamily = martel)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(
+                        "Batal",
+                        color = Color.Gray,
+                        fontFamily = martel
+                    )
+                }
+            }
+        )
     }
 }

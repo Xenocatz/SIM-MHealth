@@ -2,7 +2,6 @@ package com.example.sim_mhealth.ui.reminder
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.sim_mhealth.data.api.PengingatDetail
 import com.example.sim_mhealth.data.api.UpdatePengingatRequest
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ReminderRepository
@@ -69,21 +67,26 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
     var isLoading by remember { mutableStateOf(true) }
     var isSaving by remember { mutableStateOf(false) }
 
-    // Form fields
     var namaObat by remember { mutableStateOf("") }
     var dosisKuantitas by remember { mutableStateOf("") }
-    var dosisUnit by remember { mutableStateOf("ml") }
+    var dosisUnit by remember { mutableStateOf("tablet") }
     var tanggalMulai by remember { mutableStateOf("") }
     var tanggalAkhir by remember { mutableStateOf("") }
-    var frekuensi by remember { mutableStateOf("") }
-    var waktuAlarm by remember { mutableStateOf(mutableListOf<String>()) }
+    var frekuensi by remember { mutableStateOf("3x Sehari") }
+    val waktuAlarm = remember { mutableStateListOf<String>() }
     var catatan by remember { mutableStateOf("") }
     var stokAwal by remember { mutableStateOf("") }
 
     var expandedUnit by remember { mutableStateOf(false) }
-    val dosisUnitOptions = listOf("ml", "tablet", "kapsul", "mg", "tetes")
+    var expandedFrekuensi by remember { mutableStateOf(false) }
 
-    // Load existing data
+    var showTimePicker by remember { mutableStateOf(false) }
+    var selectedTimeIndex by remember { mutableStateOf(-1) }
+    var currentEditingTime by remember { mutableStateOf("08:00") }
+
+    val dosisUnitOptions = listOf("tablet", "kapsul", "ml", "mg", "tetes")
+    val frekuensiOptions = listOf("1x Sehari", "2x Sehari", "3x Sehari", "4x Sehari", "Sesuai kebutuhan")
+
     LaunchedEffect(reminderId) {
         val token = prefsManager.getToken()
         if (token != null) {
@@ -97,7 +100,8 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         tanggalMulai = convertIsoToDisplayDate(detail.tanggal_mulai)
                         tanggalAkhir = convertIsoToDisplayDate(detail.tanggal_akhir)
                         frekuensi = detail.frekuensi
-                        waktuAlarm = detail.waktu_alarm.toMutableList()
+                        waktuAlarm.clear()
+                        waktuAlarm.addAll(detail.waktu_alarm)
                         catatan = detail.catatan ?: ""
                         stokAwal = detail.stok_awal?.toString() ?: ""
                         isLoading = false
@@ -116,7 +120,7 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color(0xFF2196F3))
         }
     } else {
         Column(
@@ -149,6 +153,25 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                 )
                 TextButton(
                     onClick = {
+                        when {
+                            namaObat.isBlank() -> {
+                                Toast.makeText(context, "Nama obat harus diisi", Toast.LENGTH_SHORT).show()
+                                return@TextButton
+                            }
+                            dosisKuantitas.isBlank() -> {
+                                Toast.makeText(context, "Dosis harus diisi", Toast.LENGTH_SHORT).show()
+                                return@TextButton
+                            }
+                            tanggalMulai.isBlank() -> {
+                                Toast.makeText(context, "Tanggal mulai harus diisi", Toast.LENGTH_SHORT).show()
+                                return@TextButton
+                            }
+                            waktuAlarm.isEmpty() -> {
+                                Toast.makeText(context, "Waktu minimal 1", Toast.LENGTH_SHORT).show()
+                                return@TextButton
+                            }
+                        }
+
                         isSaving = true
                         val token = prefsManager.getToken()
                         if (token != null) {
@@ -156,10 +179,11 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                             val isoTanggalAkhir = convertDisplayToIsoDate(tanggalAkhir.ifBlank { null })
 
                             if (isoTanggalMulai == null) {
-                                Toast.makeText(context, "Format Tanggal Mulai tidak valid (DD-MM-YYYY)", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Format Tanggal Mulai tidak valid", Toast.LENGTH_SHORT).show()
                                 isSaving = false
                                 return@TextButton
                             }
+
                             scope.launch {
                                 val request = UpdatePengingatRequest(
                                     nama_obat = namaObat,
@@ -169,18 +193,17 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                                     tanggal_mulai = isoTanggalMulai,
                                     tanggal_akhir = isoTanggalAkhir,
                                     catatan = catatan.ifBlank { null },
-                                    waktu_alarm = waktuAlarm,
+                                    waktu_alarm = waktuAlarm.filter { it.isNotBlank() },
                                     stok_awal = stokAwal.toIntOrNull()
                                 )
 
                                 repository.updatePengingat(token, reminderId, request).fold(
                                     onSuccess = {
-                                        Toast.makeText(context, "Berhasil diupdate", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Pengingat berhasil diperbarui", Toast.LENGTH_SHORT).show()
                                         navController.popBackStack()
                                     },
                                     onFailure = { error ->
-                                        val msg = error.message ?: "Gagal memperbarui pengingat."
-                                        Toast.makeText(context, "Error: $msg", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
                                         isSaving = false
                                     }
                                 )
@@ -218,12 +241,22 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         .align(Alignment.CenterHorizontally),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = Color(0xFF2196F3),
-                        modifier = Modifier.size(32.dp)
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = null,
+                            tint = Color(0xFF9E9E9E),
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Text(
+                            text = "+",
+                            fontSize = 24.sp,
+                            color = Color(0xFF2196F3),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -319,6 +352,52 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
+                    text = "Frekuensi*",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                ExposedDropdownMenuBox(
+                    expanded = expandedFrekuensi,
+                    onExpandedChange = { expandedFrekuensi = !expandedFrekuensi }
+                ) {
+                    OutlinedTextField(
+                        value = frekuensi,
+                        onValueChange = {},
+                        readOnly = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        textStyle = TextStyle(color = Color.DarkGray),
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedFrekuensi)
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF2196F3),
+                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedFrekuensi,
+                        onDismissRequest = { expandedFrekuensi = false }
+                    ) {
+                        frekuensiOptions.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option) },
+                                onClick = {
+                                    frekuensi = option
+                                    expandedFrekuensi = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
                     text = "Periode*",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
@@ -333,7 +412,8 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         selectedDate = tanggalMulai,
                         onDateSelected = { newDate ->
                             tanggalMulai = newDate
-                        }
+                        },
+                        modifier = Modifier.weight(1f)
                     )
 
                     Icon(
@@ -349,9 +429,12 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         selectedDate = tanggalAkhir,
                         onDateSelected = { newDate ->
                             tanggalAkhir = newDate
-                        }
+                        },
+                        modifier = Modifier.weight(1f)
                     )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -362,65 +445,80 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         text = "Waktu*",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        color = Color.Black
                     )
 
-                    TextButton(
+                    IconButton(
                         onClick = {
                             waktuAlarm.add("00:00")
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = null,
+                            contentDescription = "Add Time",
                             tint = Color(0xFF2196F3),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Tambah",
-                            color = Color(0xFF2196F3),
-                            fontWeight = FontWeight.Bold
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
 
                 waktuAlarm.forEachIndexed { index, time ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedTextField(
-                            value = time,
-                            onValueChange = { newTime ->
-                                waktuAlarm[index] = newTime
-                            },
-                            modifier = Modifier.weight(1f),
-                            textStyle = TextStyle(color = Color.DarkGray),
-                            placeholder = { Text("--:--") },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF2196F3),
-                                unfocusedBorderColor = Color(0xFFE0E0E0)
-                            ),
-                            singleLine = true
-                        )
+                    key(index) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            OutlinedTextField(
+                                value = time,
+                                onValueChange = { },
+                                modifier = Modifier.weight(1f),
+                                textStyle = TextStyle(
+                                    color = Color.DarkGray,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                placeholder = { Text("--:--") },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF2196F3),
+                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                ),
+                                singleLine = true,
+                                readOnly = true,
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            selectedTimeIndex = index
+                                            currentEditingTime = time
+                                            showTimePicker = true
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.AccessTime,
+                                            contentDescription = "Pilih Waktu",
+                                            tint = Color(0xFF2196F3)
+                                        )
+                                    }
+                                }
+                            )
 
-                        if (waktuAlarm.size > 1) {
-                            IconButton(
-                                onClick = { waktuAlarm.removeAt(index) }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Remove",
-                                    tint = Color(0xFFF44336)
-                                )
+                            if (waktuAlarm.size > 1) {
+                                IconButton(
+                                    onClick = {
+                                        waktuAlarm.removeAt(index)
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Hapus Waktu",
+                                        tint = Color(0xFFE57373)
+                                    )
+                                }
                             }
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -439,6 +537,7 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         .fillMaxWidth()
                         .height(120.dp),
                     textStyle = TextStyle(color = Color.DarkGray),
+                    placeholder = { Text("Tambahkan catatan (opsional)") },
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF2196F3),
@@ -450,5 +549,71 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                 Spacer(modifier = Modifier.height(100.dp))
             }
         }
+    }
+
+    if (showTimePicker) {
+        val parts = currentEditingTime.split(":")
+        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 8
+        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+
+        val timePickerState = rememberTimePickerState(
+            initialHour = hour,
+            initialMinute = minute,
+            is24Hour = true
+        )
+
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            containerColor = Color.White,
+            title = {
+                Text(
+                    text = "Pilih Waktu Alarm",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TimePicker(
+                        state = timePickerState,
+                        colors = TimePickerDefaults.colors(
+                            clockDialColor = Color(0xFFE3F2FD),
+                            clockDialSelectedContentColor = Color.White,
+                            clockDialUnselectedContentColor = Color.DarkGray,
+                            selectorColor = Color(0xFF2196F3),
+                            timeSelectorSelectedContainerColor = Color(0xFF2196F3),
+                            timeSelectorUnselectedContainerColor = Color(0xFFE0E0E0),
+                            timeSelectorSelectedContentColor = Color.White,
+                            timeSelectorUnselectedContentColor = Color.DarkGray
+                        )
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (selectedTimeIndex >= 0) {
+                            val hour = timePickerState.hour.toString().padStart(2, '0')
+                            val minute = timePickerState.minute.toString().padStart(2, '0')
+                            waktuAlarm[selectedTimeIndex] = "$hour:$minute"
+                        }
+                        showTimePicker = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2196F3)
+                    )
+                ) {
+                    Text("Simpan")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text("Batal", color = Color.Gray)
+                }
+            }
+        )
     }
 }

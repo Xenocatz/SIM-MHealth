@@ -9,7 +9,6 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-// Request Models
 data class LoginRequest(
     val username: String,
     val password: String
@@ -21,7 +20,6 @@ data class RegisterRequest(
     val password: String
 )
 
-// Response Models
 data class LoginResponse(
     val success: Boolean,
     val data: LoginData?,
@@ -51,7 +49,6 @@ data class RegisterData(
     val expiresIn: String
 )
 
-// API Interface
 interface ApiService {
     @POST("login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
@@ -78,7 +75,6 @@ interface ApiService {
         @Body request: UpdateProfileRequest
     ): Response<UpdateProfileResponse>
 
-    // Reminder/Pengingat endpoints
     @GET("pengingat/pasien/{id_pasien}")
     suspend fun getPengingatByPasien(
         @Header("Authorization") token: String,
@@ -109,9 +105,15 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Response<DeletePengingatResponse>
+
+    @PUT("pengingat/detail/{id}/status")
+    suspend fun updateDetailPengingatStatus(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: UpdateStatusRequest
+    ): Response<UpdateStatusResponse>
 }
 
-// Dashboard Models
 data class PasienResponse(
     val pasien: PasienDetail
 )
@@ -130,14 +132,13 @@ data class PasienDetail(
     val sejak_kapan: String?
 )
 
-// OnBoarding Models
 data class OnBoardingRequest(
     val id_pasien: Int,
     val tanggal_lahir: String?,
     val tinggi_badan: Float?,
     val berat_badan: Float?,
     val jenis_kelamin: String?,
-    val jenis_kondisi: List<String>?,  // Array of strings
+    val jenis_kondisi: List<String>?,
     val sejak_kapan: String?
 )
 
@@ -155,11 +156,10 @@ data class OnBoardingData(
     val tinggi_badan: Float?,
     val berat_badan: Float?,
     val jenis_kelamin: String?,
-    val jenis_kondisi: List<String>?,  // Array of strings
+    val jenis_kondisi: List<String>?,
     val sejak_kapan: String?
 )
 
-// Update Profile Models
 data class UpdateProfileRequest(
     val email: String?,
     val tanggal_lahir: String?,
@@ -258,4 +258,14 @@ data class UpdatePengingatResponse(
 
 data class DeletePengingatResponse(
     val message: String
+)
+
+data class UpdateStatusRequest(
+    val status: String, // "sudah_minum" atau "belum_minum"
+    val waktu: String
+)
+
+data class UpdateStatusResponse(
+    val message: String,
+    val detail: DetailPengingat
 )

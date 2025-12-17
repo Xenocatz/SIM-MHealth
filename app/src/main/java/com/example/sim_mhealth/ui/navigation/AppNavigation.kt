@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -20,14 +22,22 @@ import com.example.sim_mhealth.ui.reminder.ReminderListScreen
 import com.example.sim_mhealth.ui.reminder.AddReminderScreen
 import com.example.sim_mhealth.ui.reminder.DetailReminderScreen
 import com.example.sim_mhealth.ui.reminder.EditReminderScreen
-//import com.example.sim_mhealth.ui.ai.AIScreen
+import com.example.sim_mhealth.ui.notification.NotificationScreen
+import com.example.sim_mhealth.data.preferences.PreferencesManager
+import com.example.sim_mhealth.ui.ai.AIScreen
 import com.example.sim_mhealth.ui.profile.ProfileScreen
 
 @Composable
 fun AppNavigation() {
+    val context = LocalContext.current
+    val prefsManager = remember { PreferencesManager(context) }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+
+    val userToken = prefsManager.getToken()
+    val userId = prefsManager.getUserId()
 
     val bottomBarRoutes = listOf(
         "home_screen", "reminder_screen", "ai_screen", "profile_screen"
@@ -67,12 +77,19 @@ fun AppNavigation() {
             composable("home_screen") { _ ->
                 DashboardScreen(navController = navController)
             }
+            composable("notification_screen") { _ ->
+                NotificationScreen(
+                    navController = navController,
+                    token = userToken ?: "",
+                    idPasien = userId
+                    )
+            }
             composable("reminder_screen") { _ ->
                 ReminderListScreen(navController = navController)
             }
-//            composable("ai_screen") { _ ->
-//                AIScreen(navController = navController)
-//            }
+            composable("ai_screen") { _ ->
+                AIScreen(navController = navController)
+            }
             composable("profile_screen") { _ ->
                 ProfileScreen(navController = navController)
             }
