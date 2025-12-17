@@ -332,7 +332,7 @@ fun LoginScreen(
                         }
 
                         TextButton(
-                            onClick = { /* Handle forgot password */ },
+                            onClick = { navController.navigate("forgot_password_screen") },
                             enabled = !isLoading
                         ) {
                             Text(

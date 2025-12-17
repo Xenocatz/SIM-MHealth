@@ -71,10 +71,10 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     // gemini
-    implementation("com.google.ai.client.generativeai:generativeai:0.2.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
     implementation("com.github.jeziellago:compose-markdown:0.3.6")
     // Navigation

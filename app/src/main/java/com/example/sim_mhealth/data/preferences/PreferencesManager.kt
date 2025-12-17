@@ -33,10 +33,6 @@ class PreferencesManager(context: Context) {
 
     fun getUsername(): String? = prefs.getString(KEY_USERNAME, null)
 
-    fun getEmail(): String? = prefs.getString(KEY_EMAIL, null)
-
-    fun isLoggedIn(): Boolean = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
-
     fun clearLoginData() {
         prefs.edit().clear().apply()
     }

@@ -13,6 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.ui.auth.LoginScreen
 import com.example.sim_mhealth.ui.auth.RegisterScreen
+import com.example.sim_mhealth.ui.auth.ForgotPasswordScreen
 import com.example.sim_mhealth.ui.introScreen.IntroScreen
 import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen1
 import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen2
@@ -34,7 +35,6 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
 
     val userToken = prefsManager.getToken()
     val userId = prefsManager.getUserId()
@@ -74,6 +74,9 @@ fun AppNavigation() {
             composable("register_screen") { _ ->
                 RegisterScreen(navController = navController)
             }
+            composable("forgot_password_screen") { _ ->
+                ForgotPasswordScreen(navController = navController)
+            }
             composable("home_screen") { _ ->
                 DashboardScreen(navController = navController)
             }
@@ -93,7 +96,6 @@ fun AppNavigation() {
             composable("profile_screen") { _ ->
                 ProfileScreen(navController = navController)
             }
-
             composable("detail_reminder_screen/{reminderId}") { backStackEntry ->
                 val reminderId = backStackEntry.arguments?.getString("reminderId")?.toIntOrNull() ?: 0
                 DetailReminderScreen(navController = navController, reminderId = reminderId)

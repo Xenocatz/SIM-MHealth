@@ -1,7 +1,9 @@
 package com.example.sim_mhealth.data.repository
 
+import com.example.sim_mhealth.data.api.ChangePasswordRequest
 import com.example.sim_mhealth.data.api.LoginRequest
 import com.example.sim_mhealth.data.api.LoginResponse
+import com.example.sim_mhealth.data.api.PasienDetail
 import com.example.sim_mhealth.data.api.RegisterRequest
 import com.example.sim_mhealth.data.api.RegisterResponse
 import com.example.sim_mhealth.data.api.RetrofitClient
@@ -38,6 +40,32 @@ class AuthRepository {
                 Result.success(response.body()!!)
             } else {
                 Result.failure(Exception("Registrasi gagal: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun verifyUsername(token: String, username: String): Result<PasienDetail?> {
+        return try {
+            val response = apiService.getPasienByUsername(token, username)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!.pasien)
+            } else {
+                Result.failure(Exception("Username tidak ditemukan"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun changePassword(token: String, username: String, newPassword: String): Result<String> {
+        return try {
+            val response = apiService.changePassword(token, username, ChangePasswordRequest(newPassword))
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!.message)
+            } else {
+                Result.failure(Exception("Gagal mengubah password: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

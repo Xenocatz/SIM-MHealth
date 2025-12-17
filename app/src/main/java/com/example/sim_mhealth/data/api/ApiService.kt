@@ -112,6 +112,19 @@ interface ApiService {
         @Path("id") id: Int,
         @Body request: UpdateStatusRequest
     ): Response<UpdateStatusResponse>
+
+    @GET("pasien/username/{username}")
+    suspend fun getPasienByUsername(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Response<PasienResponse>
+
+    @PUT("pasien/{username}/password")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Path("username") username: String,
+        @Body request: ChangePasswordRequest
+    ): Response<ChangePasswordResponse>
 }
 
 data class PasienResponse(
@@ -268,4 +281,22 @@ data class UpdateStatusRequest(
 data class UpdateStatusResponse(
     val message: String,
     val detail: DetailPengingat
+)
+
+data class VerifyUsernameRequest(
+    val username: String
+)
+
+data class VerifyUsernameResponse(
+    val success: Boolean,
+    val data: PasienDetail?,
+    val message: String
+)
+
+data class ChangePasswordRequest(
+    val newPassword: String
+)
+
+data class ChangePasswordResponse(
+    val message: String
 )
