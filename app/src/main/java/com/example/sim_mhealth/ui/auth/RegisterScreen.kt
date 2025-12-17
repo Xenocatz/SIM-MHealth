@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -107,7 +107,7 @@ fun RegisterScreen(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
                 )
             }
@@ -153,6 +153,7 @@ fun RegisterScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(24.dp)
+                        .navigationBarsPadding()
                 ) {
                     AuthSegmentedControl(
                         selectedSegment = currentAuthSegment,
@@ -297,7 +298,9 @@ fun RegisterScreen(
                             )
                         },
                         trailingIcon = {
-                            IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                            IconButton(onClick = {
+                                confirmPasswordVisible = !confirmPasswordVisible
+                            }) {
                                 Icon(
                                     imageVector = if (confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password",
@@ -322,19 +325,38 @@ fun RegisterScreen(
                         onClick = {
                             when {
                                 username.isBlank() || email.isBlank() || password.isBlank() -> {
-                                    Toast.makeText(context, "Username, email dan password wajib hukumnya untuk diisi", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Username, email dan password wajib hukumnya untuk diisi",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     return@Button
                                 }
+
                                 !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                                    Toast.makeText(context, "Format email tidak valid", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Format email tidak valid",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     return@Button
                                 }
+
                                 password != confirmPassword -> {
-                                    Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Password tidak cocok",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     return@Button
                                 }
+
                                 password.length < 6 -> {
-                                    Toast.makeText(context, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Password minimal 6 karakter",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     return@Button
                                 }
                             }
@@ -355,13 +377,21 @@ fun RegisterScreen(
                                                 email = response.data.user.email
                                             )
 
-                                            Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                context,
+                                                response.message,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
 
                                             navController.navigate("onboarding_screen_1") {
                                                 popUpTo("intro_screen") { inclusive = true }
                                             }
                                         } else {
-                                            Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                context,
+                                                response.message,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                         isLoading = false
                                     },
@@ -372,7 +402,8 @@ fun RegisterScreen(
                                             error.message?.contains("Failed to connect") == true -> "Gagal terhubung ke server"
                                             else -> error.message ?: "Terjadi kesalahan"
                                         }
-                                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
+                                            .show()
                                         isLoading = false
                                     }
                                 )
@@ -400,6 +431,7 @@ fun RegisterScreen(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
