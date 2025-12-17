@@ -250,7 +250,7 @@ fun OnBoardingScreen2(navController: NavController) {
                             fontSize = 16.sp,
                             color = Gray700,
                             fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 
@@ -266,7 +266,10 @@ fun OnBoardingScreen2(navController: NavController) {
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp),
-                        colors = ButtonDefaults.buttonColors( containerColor = Primary600, disabledContainerColor = Gray200),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Primary600,
+                            disabledContainerColor = Gray200
+                        ),
                         shape = CircleShape,
                         enabled = tanggalLahir.isNotBlank() && jenisKelamin.isNotBlank() &&
                                 beratBadan.isNotBlank() && tinggiBadan.isNotBlank()
