@@ -342,7 +342,7 @@ fun OnBoardingScreen3(
 
                                 val sejakKapanClean =
                                     if (hasHealthCondition == true && sejakKapan.isNotBlank()) {
-                                        sejakKapan.trim()
+                                        sejakKapan.trim().replace("/", "-")
                                     } else {
                                         null
                                     }
