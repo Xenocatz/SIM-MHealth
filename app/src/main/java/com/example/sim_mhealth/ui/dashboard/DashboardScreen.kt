@@ -3,6 +3,7 @@ package com.example.sim_mhealth.ui.dashboard
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -30,6 +32,8 @@ import com.example.sim_mhealth.data.api.PengingatItem
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.DashboardRepository
 import com.example.sim_mhealth.data.repository.ReminderRepository
+import com.example.sim_mhealth.data.repository.StepsRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,11 +45,23 @@ fun DashboardScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val repository = remember { DashboardRepository() }
     val reminderRepository = remember { ReminderRepository() }
+    val stepsRepository = remember { StepsRepository() }
     val prefsManager = remember { PreferencesManager(context) }
 
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
     var nextReminder by remember { mutableStateOf<PengingatItem?>(null) }
+    var currentSteps by remember { mutableIntStateOf(0) }
+    var targetSteps by remember { mutableIntStateOf(8000) }
+    var calories by remember { mutableIntStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentSteps = getCurrentStepsFromPrefs(context)
+            calories = (currentSteps * 0.04).toInt()
+            delay(1000)
+        }
+    }
 
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
@@ -88,7 +104,10 @@ fun DashboardScreen(navController: NavController) {
             navController = navController,
             pasienData = pasienData,
             nextReminder = nextReminder,
-            username = prefsManager.getUsername() ?: "User"
+            username = prefsManager.getUsername() ?: "User",
+            currentSteps = currentSteps,
+            targetSteps = targetSteps,
+            calories = calories
         )
     }
 }
@@ -98,7 +117,10 @@ fun DashboardContent(
     navController: NavController,
     pasienData: PasienDetail?,
     nextReminder: PengingatItem?,
-    username: String
+    username: String,
+    currentSteps: Int,
+    targetSteps: Int,
+    calories: Int
 ) {
     val beratBadan = pasienData?.berat_badan ?: 0f
     val tinggiBadan = pasienData?.tinggi_badan ?: 0f
@@ -141,10 +163,12 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Steps Card - Now Clickable
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 20.dp)
+                .clickable { navController.navigate("track_screen") },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent)
         ) {
@@ -175,9 +199,32 @@ fun DashboardContent(
                             fontWeight = FontWeight.SemiBold,
                             color = Color.White
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Text(
+                                text = currentSteps.toString(),
+                                fontSize = 32.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = " / $targetSteps",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "langkah",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
                         Spacer(modifier = Modifier.height(12.dp))
                         Image(
-                            painter = painterResource(id = R.drawable.forest_jogging_group),
+                            painter = painterResource(id = R.drawable.undraw_jogging_tf9a_1),
                             contentDescription = "Walking",
                             modifier = Modifier
                                 .size(100.dp)
@@ -205,6 +252,9 @@ fun DashboardContent(
                                 fontSize = 12.sp,
                                 color = Color.Gray
                             )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
@@ -214,18 +264,21 @@ fun DashboardContent(
                                     fontSize = 28.sp
                                 )
                                 Text(
-                                    text = "1000",
+                                    text = currentSteps.toString(),
                                     fontSize = 36.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
                                 )
                             }
-                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
                             Text(
                                 text = "Tetap bergerak,\nritmenya bagus.",
                                 fontSize = 11.sp,
                                 color = Color.Gray,
-                                lineHeight = 14.sp
+                                lineHeight = 14.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
@@ -564,10 +617,10 @@ fun getBMIStatus(bmi: Float): String {
 fun getBMIColor(bmi: Float): Color {
     return when {
         bmi == 0f -> Color.Gray
-        bmi < 18.5 -> Color(0xFFFFA726) // Orange untuk kurus
-        bmi < 25 -> Color(0xFF4CAF50) // Hijau untuk ideal
-        bmi < 30 -> Color(0xFFFFA726) // Orange untuk gemuk
-        else -> Color(0xFFF44336) // Merah untuk obesitas
+        bmi < 18.5 -> Color(0xFFFFA726)
+        bmi < 25 -> Color(0xFF4CAF50)
+        bmi < 30 -> Color(0xFFFFA726)
+        else -> Color(0xFFF44336)
     }
 }
 
@@ -592,9 +645,14 @@ fun getKategoriBMI(bmi: Float): String {
 
 fun getStatusBMIColor(bmi: Float): Color {
     return when {
-        bmi < 18.5 -> Color(0xFF2196F3) // Biru
-        bmi < 25.0 -> Color(0xFF4CAF50) // Hijau
-        bmi < 30.0 -> Color(0xFFFFA726) // Oranye
-        else -> Color(0xFFF44336) // Merah
+        bmi < 18.5 -> Color(0xFF2196F3)
+        bmi < 25.0 -> Color(0xFF4CAF50)
+        bmi < 30.0 -> Color(0xFFFFA726)
+        else -> Color(0xFFF44336)
     }
+}
+
+private fun getCurrentStepsFromPrefs(context: android.content.Context): Int {
+    val prefs = context.getSharedPreferences("steps_prefs", android.content.Context.MODE_PRIVATE)
+    return prefs.getInt("current_steps", 0)
 }

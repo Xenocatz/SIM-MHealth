@@ -27,6 +27,7 @@ import com.example.sim_mhealth.ui.notification.NotificationScreen
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.ui.ai.AIScreen
 import com.example.sim_mhealth.ui.profile.ProfileScreen
+import com.example.sim_mhealth.ui.stepsTrack.StepsTrackScreen
 
 @Composable
 fun AppNavigation() {
@@ -92,6 +93,9 @@ fun AppNavigation() {
             }
             composable("ai_screen") { _ ->
                 AIScreen(navController = navController)
+            }
+            composable("track_screen") { _ ->
+                StepsTrackScreen(navController = navController)
             }
             composable("profile_screen") { _ ->
                 ProfileScreen(navController = navController)
