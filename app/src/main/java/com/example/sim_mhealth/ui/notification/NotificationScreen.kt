@@ -2,15 +2,53 @@ package com.example.sim_mhealth.ui.notification
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,9 +59,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sim_mhealth.data.api.RetrofitClient.apiService
 import com.example.sim_mhealth.data.repository.NotificationRepository
-import com.example.sim_mhealth.ui.theme.*
+import com.example.sim_mhealth.ui.theme.martel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 data class NotificationItem(
     val id: String,
@@ -113,7 +152,12 @@ fun NotificationScreen(
                         onClick = { viewModel.markAllAsRead() },
                         modifier = Modifier.align(Alignment.CenterEnd)
                     ) {
-                        Text("Tandai Semua", color = Color(0xFF2196F3), fontFamily = martel, fontSize = 13.sp)
+                        Text(
+                            "Tandai Semua",
+                            color = Color(0xFF2196F3),
+                            fontFamily = martel,
+                            fontSize = 13.sp
+                        )
                     }
                 }
             }
@@ -156,7 +200,12 @@ fun NotificationScreen(
                 filteredNotifications.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.Notifications, null, Modifier.size(80.dp), tint = Color.LightGray)
+                            Icon(
+                                Icons.Default.Notifications,
+                                null,
+                                Modifier.size(80.dp),
+                                tint = Color.LightGray
+                            )
                             Spacer(Modifier.height(16.dp))
                             Text(
                                 text = if (selectedTab == NotificationTab.UNREAD)
@@ -250,7 +299,10 @@ private fun NotificationCard(
             Box(
                 Modifier
                     .size(48.dp)
-                    .background(getNotificationColor(notification.type).copy(alpha = 0.2f), CircleShape),
+                    .background(
+                        getNotificationColor(notification.type).copy(alpha = 0.2f),
+                        CircleShape
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -271,7 +323,11 @@ private fun NotificationCard(
                         modifier = Modifier.weight(1f)
                     )
                     if (!notification.isRead) {
-                        Box(Modifier.size(8.dp).background(Color(0xFF2196F3), CircleShape))
+                        Box(
+                            Modifier
+                                .size(8.dp)
+                                .background(Color(0xFF2196F3), CircleShape)
+                        )
                     }
                 }
 
@@ -312,7 +368,6 @@ private fun NotificationCard(
 }
 
 
-
 @Composable
 private fun NotificationTabButton(
     text: String,
@@ -331,7 +386,12 @@ private fun NotificationTabButton(
         elevation = ButtonDefaults.buttonElevation(0.dp),
         shape = RoundedCornerShape(20.dp)
     ) {
-        Text("$text ($count)", fontSize = 14.sp, fontFamily = martel,fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+        Text(
+            "$text ($count)",
+            fontSize = 14.sp,
+            fontFamily = martel,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
     }
 }
 

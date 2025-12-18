@@ -59,9 +59,14 @@ class AuthRepository {
         }
     }
 
-    suspend fun changePassword(token: String, username: String, newPassword: String): Result<String> {
+    suspend fun changePassword(
+        token: String,
+        username: String,
+        newPassword: String
+    ): Result<String> {
         return try {
-            val response = apiService.changePassword(token, username, ChangePasswordRequest(newPassword))
+            val response =
+                apiService.changePassword(token, username, ChangePasswordRequest(newPassword))
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!.message)
             } else {

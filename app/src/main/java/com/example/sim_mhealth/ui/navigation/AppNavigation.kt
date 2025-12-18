@@ -11,22 +11,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.sim_mhealth.data.preferences.PreferencesManager
+import com.example.sim_mhealth.ui.ai.AIScreen
+import com.example.sim_mhealth.ui.auth.ForgotPasswordScreen
 import com.example.sim_mhealth.ui.auth.LoginScreen
 import com.example.sim_mhealth.ui.auth.RegisterScreen
-import com.example.sim_mhealth.ui.auth.ForgotPasswordScreen
+import com.example.sim_mhealth.ui.dashboard.DashboardScreen
 import com.example.sim_mhealth.ui.introScreen.IntroScreen
+import com.example.sim_mhealth.ui.notification.NotificationScreen
 import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen1
 import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen2
 import com.example.sim_mhealth.ui.onBoardingScreen.OnBoardingScreen3
-import com.example.sim_mhealth.ui.dashboard.DashboardScreen
-import com.example.sim_mhealth.ui.reminder.ReminderListScreen
+import com.example.sim_mhealth.ui.profile.ProfileScreen
 import com.example.sim_mhealth.ui.reminder.AddReminderScreen
 import com.example.sim_mhealth.ui.reminder.DetailReminderScreen
 import com.example.sim_mhealth.ui.reminder.EditReminderScreen
-import com.example.sim_mhealth.ui.notification.NotificationScreen
-import com.example.sim_mhealth.data.preferences.PreferencesManager
-import com.example.sim_mhealth.ui.ai.AIScreen
-import com.example.sim_mhealth.ui.profile.ProfileScreen
+import com.example.sim_mhealth.ui.reminder.ReminderListScreen
 import com.example.sim_mhealth.ui.stepsTrack.StepsTrackScreen
 
 @Composable
@@ -86,7 +86,7 @@ fun AppNavigation() {
                     navController = navController,
                     token = userToken ?: "",
                     idPasien = userId
-                    )
+                )
             }
             composable("reminder_screen") { _ ->
                 ReminderListScreen(navController = navController)
@@ -101,11 +101,13 @@ fun AppNavigation() {
                 ProfileScreen(navController = navController)
             }
             composable("detail_reminder_screen/{reminderId}") { backStackEntry ->
-                val reminderId = backStackEntry.arguments?.getString("reminderId")?.toIntOrNull() ?: 0
+                val reminderId =
+                    backStackEntry.arguments?.getString("reminderId")?.toIntOrNull() ?: 0
                 DetailReminderScreen(navController = navController, reminderId = reminderId)
             }
             composable("edit_reminder_screen/{reminderId}") { backStackEntry ->
-                val reminderId = backStackEntry.arguments?.getString("reminderId")?.toIntOrNull() ?: 0
+                val reminderId =
+                    backStackEntry.arguments?.getString("reminderId")?.toIntOrNull() ?: 0
                 EditReminderScreen(navController = navController, reminderId = reminderId)
             }
             composable("add_reminder_screen") {

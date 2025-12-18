@@ -4,7 +4,7 @@ import com.example.sim_mhealth.data.api.ApiService
 import com.example.sim_mhealth.ui.notification.NotificationItem
 import com.example.sim_mhealth.ui.notification.NotificationType
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class NotificationRepository(private val apiService: ApiService) {
 
@@ -21,7 +21,8 @@ class NotificationRepository(private val apiService: ApiService) {
                         type = NotificationType.REMINDER,
                         title = "Waktunya Minum Obat: ${pengingat.nama_obat}",
                         message = "${pengingat.dosis_kuantitas} ${pengingat.dosis_unit} - ${pengingat.frekuensi}",
-                        timestamp = dateFormat.parse(pengingat.tanggal_mulai)?.time ?: System.currentTimeMillis(),
+                        timestamp = dateFormat.parse(pengingat.tanggal_mulai)?.time
+                            ?: System.currentTimeMillis(),
                         isRead = pengingat.stok_saat_ini == 0
                     )
                 }

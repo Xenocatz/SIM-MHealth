@@ -2,16 +2,56 @@ package com.example.sim_mhealth.ui.reminder
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -85,7 +125,8 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
     var currentEditingTime by remember { mutableStateOf("08:00") }
 
     val dosisUnitOptions = listOf("tablet", "kapsul", "ml", "mg", "tetes")
-    val frekuensiOptions = listOf("1x Sehari", "2x Sehari", "3x Sehari", "4x Sehari", "Sesuai kebutuhan")
+    val frekuensiOptions =
+        listOf("1x Sehari", "2x Sehari", "3x Sehari", "4x Sehari", "Sesuai kebutuhan")
 
     LaunchedEffect(reminderId) {
         val token = prefsManager.getToken()
@@ -155,19 +196,29 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                     onClick = {
                         when {
                             namaObat.isBlank() -> {
-                                Toast.makeText(context, "Nama obat harus diisi", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Nama obat harus diisi", Toast.LENGTH_SHORT)
+                                    .show()
                                 return@TextButton
                             }
+
                             dosisKuantitas.isBlank() -> {
-                                Toast.makeText(context, "Dosis harus diisi", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Dosis harus diisi", Toast.LENGTH_SHORT)
+                                    .show()
                                 return@TextButton
                             }
+
                             tanggalMulai.isBlank() -> {
-                                Toast.makeText(context, "Tanggal mulai harus diisi", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Tanggal mulai harus diisi",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 return@TextButton
                             }
+
                             waktuAlarm.isEmpty() -> {
-                                Toast.makeText(context, "Waktu minimal 1", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Waktu minimal 1", Toast.LENGTH_SHORT)
+                                    .show()
                                 return@TextButton
                             }
                         }
@@ -176,10 +227,15 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
                         val token = prefsManager.getToken()
                         if (token != null) {
                             val isoTanggalMulai = convertDisplayToIsoDate(tanggalMulai)
-                            val isoTanggalAkhir = convertDisplayToIsoDate(tanggalAkhir.ifBlank { null })
+                            val isoTanggalAkhir =
+                                convertDisplayToIsoDate(tanggalAkhir.ifBlank { null })
 
                             if (isoTanggalMulai == null) {
-                                Toast.makeText(context, "Format Tanggal Mulai tidak valid", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Format Tanggal Mulai tidak valid",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 isSaving = false
                                 return@TextButton
                             }
@@ -199,11 +255,19 @@ fun EditReminderScreen(navController: NavController, reminderId: Int) {
 
                                 repository.updatePengingat(token, reminderId, request).fold(
                                     onSuccess = {
-                                        Toast.makeText(context, "Pengingat berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Pengingat berhasil diperbarui",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         navController.popBackStack()
                                     },
                                     onFailure = { error ->
-                                        Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Error: ${error.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         isSaving = false
                                     }
                                 )

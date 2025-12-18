@@ -24,7 +24,8 @@ class SaveStepsWorker(
             if (userId == -1) return Result.failure()
 
             val prefsName = "steps_prefs_user_$userId"
-            val stepsPrefs = applicationContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+            val stepsPrefs =
+                applicationContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
 
             val currentSteps = stepsPrefs.getInt("current_steps", 0)
             val savedDate = stepsPrefs.getString("date", getCurrentDate())

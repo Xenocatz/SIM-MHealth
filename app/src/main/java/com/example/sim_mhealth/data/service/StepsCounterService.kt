@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -21,6 +20,7 @@ import androidx.core.app.NotificationCompat
 import com.example.sim_mhealth.MainActivity
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.StepsRepository
+import com.example.sim_mhealth.data.worker.WorkManagerScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.example.sim_mhealth.data.worker.WorkManagerScheduler
 
 class StepsCounterService : Service(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
@@ -45,7 +44,7 @@ class StepsCounterService : Service(), SensorEventListener {
     private fun getUserSpecificPrefs(): SharedPreferences {
         val userId = prefsManager.getUserId()
         val prefsName = if (userId != -1) "steps_prefs_user_$userId" else "steps_prefs_default"
-        return getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        return getSharedPreferences(prefsName, MODE_PRIVATE)
     }
 
     private var initialSteps = 0
@@ -64,7 +63,7 @@ class StepsCounterService : Service(), SensorEventListener {
         super.onCreate()
         prefsManager = PreferencesManager(this)
         repository = StepsRepository()
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
         createNotificationChannel()

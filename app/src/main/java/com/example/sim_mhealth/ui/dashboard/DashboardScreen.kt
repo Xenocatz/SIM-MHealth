@@ -6,15 +6,38 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,7 +46,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,12 +58,13 @@ import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.DashboardRepository
 import com.example.sim_mhealth.data.repository.ReminderRepository
 import com.example.sim_mhealth.data.repository.StepsRepository
-import kotlinx.coroutines.delay
 import com.example.sim_mhealth.ui.theme.Gray700
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import kotlin.math.pow
 
 @Composable
@@ -50,7 +73,7 @@ fun DashboardScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val repository = remember { DashboardRepository() }
     val reminderRepository = remember { ReminderRepository() }
-    val stepsRepository = remember { StepsRepository() }
+    remember { StepsRepository() }
     val prefsManager = remember { PreferencesManager(context) }
 
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
@@ -58,13 +81,13 @@ fun DashboardScreen(navController: NavController) {
 
     val userId = prefsManager.getUserId()
     val prefsName = "steps_prefs_user_$userId"
-    val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-    var currentSteps by remember { 
-		val userId = prefsManager.getUserId()
-		val prefsName = if (userId != -1) "steps_prefs_user_$userId" else "steps_prefs_default"
-		val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-		mutableIntStateOf(prefs.getInt("current_steps", 0)) 
-	}
+    context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+    var currentSteps by remember {
+        val userId = prefsManager.getUserId()
+        val prefsName = if (userId != -1) "steps_prefs_user_$userId" else "steps_prefs_default"
+        val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        mutableIntStateOf(prefs.getInt("current_steps", 0))
+    }
     var targetSteps by remember { mutableIntStateOf(8000) }
     var calories by remember { mutableIntStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
@@ -94,7 +117,8 @@ fun DashboardScreen(navController: NavController) {
                         pasienData = response.pasien
                     },
                     onFailure = { error ->
-                        Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 )
 
@@ -382,7 +406,10 @@ fun DashboardContent(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     val bmi = remember(beratBadan, tinggiBadan) {
-                        if (beratBadan > 0 && tinggiBadan > 0) hitungBMI(beratBadan, tinggiBadan) else 0.0
+                        if (beratBadan > 0 && tinggiBadan > 0) hitungBMI(
+                            beratBadan,
+                            tinggiBadan
+                        ) else 0.0
                     }
 
                     val kategoriBMI = remember(bmi) { getKategoriBMI(bmi.toFloat()) }

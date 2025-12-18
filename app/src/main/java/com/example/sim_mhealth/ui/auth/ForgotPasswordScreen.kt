@@ -2,13 +2,35 @@ package com.example.sim_mhealth.ui.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,7 +104,11 @@ fun ForgotPasswordScreen(navController: NavController) {
                     onUsernameChange = { username = it },
                     onNextClick = {
                         if (username.isBlank()) {
-                            Toast.makeText(context, "Username tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Username tidak boleh kosong",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             return@UsernameStep
                         }
 
@@ -94,12 +120,20 @@ fun ForgotPasswordScreen(navController: NavController) {
                                     if (pasien != null) {
                                         currentStep = 2
                                     } else {
-                                        Toast.makeText(context, "Username tidak ditemukan", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Username tidak ditemukan",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 },
                                 onFailure = { error ->
                                     isLoading = false
-                                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Error: ${error.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             )
                         }
@@ -114,11 +148,16 @@ fun ForgotPasswordScreen(navController: NavController) {
                     onConfirmPasswordChange = { confirmPassword = it },
                     onSaveClick = {
                         if (newPassword.isBlank() || newPassword.length < 6) {
-                            Toast.makeText(context, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Password minimal 6 karakter",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             return@PasswordStep
                         }
                         if (newPassword != confirmPassword) {
-                            Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT)
+                                .show()
                             return@PasswordStep
                         }
 
@@ -132,7 +171,11 @@ fun ForgotPasswordScreen(navController: NavController) {
                                 },
                                 onFailure = { error ->
                                     isLoading = false
-                                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Error: ${error.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             )
                         }
@@ -182,7 +225,12 @@ fun UsernameStep(
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)
         } else {
-            Text("Lanjut", fontWeight = FontWeight.Bold, fontSize = 16.sp, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                "Lanjut",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
@@ -246,7 +294,12 @@ fun PasswordStep(
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)
         } else {
-            Text("Simpan Password", fontWeight = FontWeight.Bold, fontFamily = hindMadurai, fontSize = 16.sp)
+            Text(
+                "Simpan Password",
+                fontWeight = FontWeight.Bold,
+                fontFamily = hindMadurai,
+                fontSize = 16.sp
+            )
         }
     }
 }
