@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -37,8 +38,14 @@ class StepsCounterService : Service(), SensorEventListener {
     private lateinit var repository: StepsRepository
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val sharedPrefs by lazy {
-        getSharedPreferences("steps_prefs", Context.MODE_PRIVATE)
+//    private val sharedPrefs by lazy {
+//        getSharedPreferences("steps_prefs", Context.MODE_PRIVATE)
+//    }
+
+    private fun getUserSpecificPrefs(): SharedPreferences {
+        val userId = prefsManager.getUserId()
+        val prefsName = if (userId != -1) "steps_prefs_user_$userId" else "steps_prefs_default"
+        return getSharedPreferences(prefsName, Context.MODE_PRIVATE)
     }
 
     private var initialSteps = 0
@@ -108,12 +115,13 @@ class StepsCounterService : Service(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     private fun loadTodaySteps() {
-        val savedDate = sharedPrefs.getString(KEY_DATE, "")
+        val prefs = getUserSpecificPrefs()
+        val savedDate = prefs.getString(KEY_DATE, "")
         val currentDate = getCurrentDate()
 
         if (savedDate == currentDate) {
-            initialSteps = sharedPrefs.getInt(KEY_INITIAL_STEPS, 0)
-            currentSteps = sharedPrefs.getInt(KEY_CURRENT_STEPS, 0)
+            initialSteps = prefs.getInt(KEY_INITIAL_STEPS, 0)
+            currentSteps = prefs.getInt(KEY_CURRENT_STEPS, 0)
         } else {
             resetDailySteps(0)
         }
@@ -126,7 +134,8 @@ class StepsCounterService : Service(), SensorEventListener {
     }
 
     private fun saveToPrefs() {
-        sharedPrefs.edit().apply {
+        val prefs = getUserSpecificPrefs()
+        prefs.edit().apply {
             putInt(KEY_INITIAL_STEPS, initialSteps)
             putInt(KEY_CURRENT_STEPS, currentSteps)
             putString(KEY_DATE, todayDate)

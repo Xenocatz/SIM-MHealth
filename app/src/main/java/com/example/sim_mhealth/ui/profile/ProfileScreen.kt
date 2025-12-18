@@ -1,5 +1,8 @@
 package com.example.sim_mhealth.ui.profile
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,10 +26,13 @@ import androidx.navigation.NavController
 import com.example.sim_mhealth.data.api.PasienDetail
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ProfileRepository
+import com.example.sim_mhealth.data.service.StepsCounterService
+import com.example.sim_mhealth.data.worker.WorkManagerScheduler
 import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.content.edit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -353,7 +359,7 @@ fun ProfileScreen(navController: NavController) {
 
                 Button(
                     onClick = {
-                        prefsManager.clearLoginData()
+                        onLogout(context)
                         navController.navigate("intro_screen") {
                             popUpTo(0) { inclusive = true }
                         }
@@ -383,6 +389,30 @@ fun ProfileScreen(navController: NavController) {
             }
         }
     }
+}
+
+private fun stopStepTracking(context: Context) {
+    val intent = Intent(context, StepsCounterService::class.java)
+    context.stopService(intent)
+}
+
+@SuppressLint("UseKtx")
+fun onLogout(context: Context) {
+    WorkManagerScheduler.cancelDailySave(context)
+    stopStepTracking(context)
+
+    val prefsManager = PreferencesManager(context)
+    val userId = prefsManager.getUserId()
+
+    if (userId != -1) {
+        val prefsName = "steps_prefs_user_$userId"
+        context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+            .edit {
+                clear()
+            }
+    }
+
+    prefsManager.clearLoginData()
 }
 
 fun formatDateForDisplay(dateString: String?): String {

@@ -23,12 +23,12 @@ class SaveStepsWorker(
             val userId = prefsManager.getUserId()
             if (userId == -1) return Result.failure()
 
-            // Get yesterday's data from SharedPreferences
-            val stepsPrefs = applicationContext.getSharedPreferences("steps_prefs", Context.MODE_PRIVATE)
+            val prefsName = "steps_prefs_user_$userId"
+            val stepsPrefs = applicationContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+
             val currentSteps = stepsPrefs.getInt("current_steps", 0)
             val savedDate = stepsPrefs.getString("date", getCurrentDate())
 
-            // Only save if there are steps to save
             if (currentSteps > 0 && savedDate != null) {
                 repository.addLangkah(
                     token = token,
@@ -37,14 +37,6 @@ class SaveStepsWorker(
                     tanggal = savedDate,
                     catatan = null
                 )
-
-                // Reset for new day
-                stepsPrefs.edit().apply {
-                    putInt("initial_steps", 0)
-                    putInt("current_steps", 0)
-                    putString("date", getCurrentDate())
-                    apply()
-                }
             }
 
             Result.success()

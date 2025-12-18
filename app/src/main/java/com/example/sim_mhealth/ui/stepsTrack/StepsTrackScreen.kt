@@ -69,8 +69,9 @@ fun StepsTrackScreen(navController: NavController) {
     }
 
     LaunchedEffect(isTracking) {
+        val userId = prefsManager.getUserId()
         while (isTracking) {
-            currentSteps = getCurrentStepsFromPrefs(context)
+            currentSteps = getCurrentStepsFromPrefs(context, userId)
             delay(1000)
         }
     }
@@ -385,8 +386,9 @@ private fun isServiceRunning(context: Context): Boolean {
     return false
 }
 
-private fun getCurrentStepsFromPrefs(context: Context): Int {
-    val prefs = context.getSharedPreferences("steps_prefs", Context.MODE_PRIVATE)
+private fun getCurrentStepsFromPrefs(context: Context, userId: Int): Int {
+    val prefsName = "steps_prefs_user_$userId"
+    val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
     return prefs.getInt("current_steps", 0)
 }
 

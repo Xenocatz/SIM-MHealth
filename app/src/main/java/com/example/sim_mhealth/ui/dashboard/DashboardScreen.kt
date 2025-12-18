@@ -1,6 +1,7 @@
 package com.example.sim_mhealth.ui.dashboard
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,18 +55,33 @@ fun DashboardScreen(navController: NavController) {
 
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
     var nextReminder by remember { mutableStateOf<PengingatItem?>(null) }
-    var currentSteps by remember { mutableIntStateOf(0) }
+
+    val userId = prefsManager.getUserId()
+    val prefsName = "steps_prefs_user_$userId"
+    val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+    var currentSteps by remember { 
+		val userId = prefsManager.getUserId()
+		val prefsName = if (userId != -1) "steps_prefs_user_$userId" else "steps_prefs_default"
+		val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+		mutableIntStateOf(prefs.getInt("current_steps", 0)) 
+	}
     var targetSteps by remember { mutableIntStateOf(8000) }
     var calories by remember { mutableIntStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         while (true) {
-            currentSteps = getCurrentStepsFromPrefs(context)
+            val userId = prefsManager.getUserId()
+            if (userId != -1) {
+                val prefsName = "steps_prefs_user_$userId"
+                val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+                currentSteps = prefs.getInt("current_steps", 0)
+            }
             calories = (currentSteps * 0.04).toInt()
             delay(1000)
         }
     }
+
 
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
@@ -168,7 +184,6 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Steps Card - Now Clickable
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -656,10 +671,6 @@ fun getStatusBMIColor(bmi: Float): Color {
     }
 }
 
-private fun getCurrentStepsFromPrefs(context: android.content.Context): Int {
-    val prefs = context.getSharedPreferences("steps_prefs", android.content.Context.MODE_PRIVATE)
-    return prefs.getInt("current_steps", 0)
-}
 @Preview
 @Composable
 fun DashboardScreenPreview() {
