@@ -74,7 +74,8 @@ fun RegisterScreen(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
-                .blur(8.dp),
+                .blur(8.dp)
+                .navigationBarsPadding(),
             contentScale = ContentScale.Crop
         )
 
@@ -145,14 +146,15 @@ fun RegisterScreen(
 
             Card(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp)
+                        .padding(24.dp).verticalScroll(scrollState)
                         .navigationBarsPadding()
                 ) {
                     AuthSegmentedControl(
