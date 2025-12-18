@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,12 +18,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.AuthRepository
+import com.example.sim_mhealth.ui.theme.DarkGray900
 import com.example.sim_mhealth.ui.theme.Gray700
+import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 import com.example.sim_mhealth.ui.theme.hindMadurai
 import kotlinx.coroutines.launch
 
@@ -47,6 +50,7 @@ fun ForgotPasswordScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkGray900),
                 title = { Text("Lupa Password") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -178,7 +182,7 @@ fun UsernameStep(
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)
         } else {
-            Text("Lanjut", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text("Lanjut", fontWeight = FontWeight.Bold, fontSize = 16.sp, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -244,5 +248,13 @@ fun PasswordStep(
         } else {
             Text("Simpan Password", fontWeight = FontWeight.Bold, fontFamily = hindMadurai, fontSize = 16.sp)
         }
+    }
+}
+
+@Preview
+@Composable
+fun ForgotPasswordScreenPreview() {
+    SIMMHealthTheme {
+        ForgotPasswordScreen(navController = rememberNavController())
     }
 }
