@@ -125,6 +125,24 @@ interface ApiService {
         @Path("username") username: String,
         @Body request: ChangePasswordRequest
     ): Response<ChangePasswordResponse>
+
+    @POST("langkah")
+    suspend fun addLangkah(
+        @Header("Authorization") token: String,
+        @Body request: AddLangkahRequest
+    ): Response<AddLangkahResponse>
+
+    @GET("langkah/{id_pasien}")
+    suspend fun getRiwayatLangkah(
+        @Header("Authorization") token: String,
+        @Path("id_pasien") idPasien: Int
+    ): Response<RiwayatLangkahResponse>
+
+    @GET("langkah/{id_pasien}/statistik")
+    suspend fun getStatistikLangkah(
+        @Header("Authorization") token: String,
+        @Path("id_pasien") idPasien: Int
+    ): Response<StatistikLangkahResponse>
 }
 
 data class PasienResponse(
@@ -299,4 +317,43 @@ data class ChangePasswordRequest(
 
 data class ChangePasswordResponse(
     val message: String
+)
+
+data class AddLangkahRequest(
+    val id_pasien: Int,
+    val jumlah_langkah: Int,
+    val tanggal: String, // Format: YYYY-MM-DD
+    val catatan: String?
+)
+
+data class AddLangkahResponse(
+    val success: Boolean,
+    val message: String,
+    val data: LangkahData?
+)
+
+data class LangkahData(
+    val id_langkah: Int,
+    val id_pasien: Int,
+    val jumlah_langkah: Int,
+    val tanggal: String,
+    val catatan: String?
+)
+
+data class RiwayatLangkahResponse(
+    val success: Boolean,
+    val data: List<LangkahData>
+)
+
+data class StatistikLangkahResponse(
+    val success: Boolean,
+    val data: StatistikData
+)
+
+data class StatistikData(
+    val total_langkah: Int,
+    val rata_rata_harian: Int,
+    val hari_tercatat: Int,
+    val langkah_tertinggi: Int,
+    val tanggal_tertinggi: String?
 )

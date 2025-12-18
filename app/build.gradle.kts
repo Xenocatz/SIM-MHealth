@@ -51,6 +51,17 @@ android {
         buildConfig = true
         compose = true
     }
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = false
+        }
+        abi {
+            enableSplit = false
+        }
+    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
@@ -73,6 +84,8 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
