@@ -1,5 +1,6 @@
 package com.example.sim_mhealth.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,22 +15,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.R
 import com.example.sim_mhealth.data.api.PasienDetail
 import com.example.sim_mhealth.data.api.PengingatItem
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.DashboardRepository
 import com.example.sim_mhealth.data.repository.ReminderRepository
+import com.example.sim_mhealth.ui.theme.Gray700
+import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -45,7 +49,7 @@ fun DashboardScreen(navController: NavController) {
 
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
     var nextReminder by remember { mutableStateOf<PengingatItem?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
@@ -93,6 +97,7 @@ fun DashboardScreen(navController: NavController) {
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun DashboardContent(
     navController: NavController,
@@ -163,7 +168,7 @@ fun DashboardContent(
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(
@@ -175,14 +180,12 @@ fun DashboardContent(
                             fontWeight = FontWeight.SemiBold,
                             color = Color.White
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Image(
-                            painter = painterResource(id = R.drawable.forest_jogging_group),
+                            painter = painterResource(id = R.drawable.undraw_jogging),
                             contentDescription = "Walking",
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            contentScale = ContentScale.Crop
+                            modifier = Modifier.fillMaxWidth(),
+                            contentScale = ContentScale.Fit
                         )
                     }
 
@@ -224,8 +227,10 @@ fun DashboardContent(
                             Text(
                                 text = "Tetap bergerak,\nritmenya bagus.",
                                 fontSize = 11.sp,
-                                color = Color.Gray,
-                                lineHeight = 14.sp
+                                color = Gray700,
+                                lineHeight = 14.sp,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                     }
@@ -572,7 +577,7 @@ fun getBMIColor(bmi: Float): Color {
 }
 
 fun getCurrentDate(): String {
-    val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
+    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID"))
     return dateFormat.format(Date())
 }
 
@@ -596,5 +601,13 @@ fun getStatusBMIColor(bmi: Float): Color {
         bmi < 25.0 -> Color(0xFF4CAF50) // Hijau
         bmi < 30.0 -> Color(0xFFFFA726) // Oranye
         else -> Color(0xFFF44336) // Merah
+    }
+}
+
+@Preview
+@Composable
+fun DashboardScreenPreview() {
+    SIMMHealthTheme {
+        DashboardScreen(navController = rememberNavController())
     }
 }
