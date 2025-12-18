@@ -58,6 +58,7 @@ import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.DashboardRepository
 import com.example.sim_mhealth.data.repository.ReminderRepository
 import com.example.sim_mhealth.data.repository.StepsRepository
+import com.example.sim_mhealth.ui.components.SleepTimerDialog
 import com.example.sim_mhealth.ui.theme.Gray700
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 import kotlinx.coroutines.delay
@@ -172,6 +173,10 @@ fun DashboardContent(
     val bmi = calculateBMI(beratBadan, tinggiBadan)
     val bmiStatus = getBMIStatus(bmi)
     val bmiColor = getBMIColor(bmi)
+
+    val context = LocalContext.current
+    val prefsManager = remember { PreferencesManager(context) }
+    var showSleepDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -388,7 +393,11 @@ fun DashboardContent(
                             maxValue = "/8jam",
                             status = "bagus",
                             statusColor = Color(0xFF4CAF50),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    showSleepDialog = true
+                                }
                         )
 
                         StatusCardFigma(
@@ -484,6 +493,17 @@ fun DashboardContent(
         }
 
         Spacer(modifier = Modifier.height(100.dp))
+    }
+
+    if (showSleepDialog) {
+        SleepTimerDialog(
+            context = context,
+            preferencesManager = prefsManager,
+            onDismiss = { showSleepDialog = false },
+            onTimerSet = {
+                Toast.makeText(context, "Timer tidur diatur!", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 }
 

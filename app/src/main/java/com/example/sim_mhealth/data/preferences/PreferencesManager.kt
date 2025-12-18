@@ -2,6 +2,7 @@ package com.example.sim_mhealth.data.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 class PreferencesManager(context: Context) {
     private val prefs: SharedPreferences =
@@ -71,5 +72,53 @@ class PreferencesManager(context: Context) {
         }
 
         editor.apply()
+    }
+
+    fun saveScheduledSleepTime(startTime: String, endTime: String) {
+        prefs.edit().apply {
+            putString("scheduled_sleep_start", startTime)
+            putString("scheduled_sleep_end", endTime)
+            apply()
+        }
+    }
+
+    fun getScheduledSleepStartTime(): String? = prefs.getString("scheduled_sleep_start", null)
+    fun getScheduledSleepEndTime(): String? = prefs.getString("scheduled_sleep_end", null)
+
+    // Save actual sleep times (when alarms trigger)
+    fun saveSleepStartTime(startTime: String) {
+        prefs.edit().putString("actual_sleep_start", startTime).apply()
+    }
+
+    fun saveSleepEndTime(endTime: String) {
+        prefs.edit().putString("actual_sleep_end", endTime).apply()
+    }
+
+    fun getSleepStartTime(): String? = prefs.getString("actual_sleep_start", null)
+    fun getSleepEndTime(): String? = prefs.getString("actual_sleep_end", null)
+
+    fun saveSleepDuration(durationMinutes: Long) {
+        prefs.edit().putLong("sleep_duration", durationMinutes).apply()
+    }
+
+    fun getSleepDuration(): Long = prefs.getLong("sleep_duration", 0)
+
+    fun saveSleepDelay(delayMinutes: Long) {
+        prefs.edit().putLong("sleep_delay", delayMinutes).apply()
+    }
+
+    fun getSleepDelay(): Long = prefs.getLong("sleep_delay", 0)
+
+    // Clear sleep data
+    fun clearSleepData() {
+        prefs.edit().apply {
+            remove("scheduled_sleep_start")
+            remove("scheduled_sleep_end")
+            remove("actual_sleep_start")
+            remove("actual_sleep_end")
+            remove("sleep_duration")
+            remove("sleep_delay")
+            apply()
+        }
     }
 }
