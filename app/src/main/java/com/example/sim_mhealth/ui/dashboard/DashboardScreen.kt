@@ -49,7 +49,7 @@ fun DashboardScreen(navController: NavController) {
 
     var pasienData by remember { mutableStateOf<PasienDetail?>(null) }
     var nextReminder by remember { mutableStateOf<PengingatItem?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         val token = prefsManager.getToken()
