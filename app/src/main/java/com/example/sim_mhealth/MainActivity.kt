@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.compose.rememberNavController
+import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.ui.navigation.AppNavigation
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
 

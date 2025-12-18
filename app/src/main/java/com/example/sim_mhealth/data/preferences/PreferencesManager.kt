@@ -36,4 +36,40 @@ class PreferencesManager(context: Context) {
     fun clearLoginData() {
         prefs.edit().clear().apply()
     }
+
+    fun saveRememberMe(remember: Boolean) {
+        prefs.edit().putBoolean("remember_me", remember).apply()
+    }
+
+    fun getRememberMe(): Boolean {
+        return prefs.getBoolean("remember_me", false)
+    }
+
+    fun saveLoginSession(token: String, userId: Int, username: String, remember: Boolean) {
+        prefs.edit().apply {
+            putString("auth_token", token)
+            putInt("user_id", userId)
+            putString("username", username)
+            putBoolean("remember_me", remember)
+            putBoolean("is_logged_in", true)
+            apply()
+        }
+    }
+
+    fun isLoggedIn(): Boolean {
+        return prefs.getBoolean("is_logged_in", false) && getToken() != null
+    }
+
+    fun logout() {
+        val rememberMe = getRememberMe()
+        val editor = prefs.edit()
+
+        if (rememberMe) {
+            editor.putBoolean("is_logged_in", false)
+        } else {
+            editor.clear()
+        }
+
+        editor.apply()
+    }
 }

@@ -39,6 +39,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -177,6 +178,14 @@ fun LoginScreen(
     var isLoading by remember { mutableStateOf(false) }
 
     val currentAuthSegment by remember { mutableStateOf(AuthSegment.LOGIN) }
+
+    LaunchedEffect(Unit) {
+        if (prefsManager.isLoggedIn()) {
+            navController.navigate("dashboard") {
+                popUpTo("login_screen") { inclusive = true }
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(

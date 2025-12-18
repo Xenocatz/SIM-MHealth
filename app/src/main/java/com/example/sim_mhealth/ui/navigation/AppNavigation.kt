@@ -45,6 +45,15 @@ fun AppNavigation() {
     )
     val shouldShowBottomBar = currentRoute in bottomBarRoutes
 
+
+    val preferencesManager = PreferencesManager(context)
+    val start = if (preferencesManager.isLoggedIn()) {
+        "home_screen"
+    } else {
+        "intro_screen"
+    }
+
+
     Scaffold(
         bottomBar = {
             if (shouldShowBottomBar) {
@@ -54,7 +63,7 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "intro_screen",
+            startDestination = start,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("intro_screen") { _ ->
