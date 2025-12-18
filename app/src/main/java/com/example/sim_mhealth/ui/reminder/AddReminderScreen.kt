@@ -2,6 +2,7 @@ package com.example.sim_mhealth.ui.reminder
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,13 +21,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sim_mhealth.data.api.CreatePengingatRequest
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ReminderRepository
 import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
+import com.example.sim_mhealth.ui.theme.hindMadurai
 import com.example.sim_mhealth.ui.theme.martel
 import kotlinx.coroutines.launch
 
@@ -63,7 +68,8 @@ fun AddReminderScreen(navController: NavController) {
     )
 
     val dosisUnitOptions = listOf("tablet", "kapsul", "ml", "mg", "tetes")
-    val frekuensiOptions = listOf("1x Sehari", "2x Sehari", "3x Sehari", "4x Sehari", "Sesuai kebutuhan")
+    val frekuensiOptions =
+        listOf("1x Sehari", "2x Sehari", "3x Sehari", "4x Sehari", "Sesuai kebutuhan")
 
     Column(
         modifier = Modifier
@@ -97,17 +103,22 @@ fun AddReminderScreen(navController: NavController) {
                 onClick = {
                     when {
                         namaObat.isBlank() -> {
-                            Toast.makeText(context, "Nama obat harus diisi", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Nama obat harus diisi", Toast.LENGTH_SHORT)
+                                .show()
                             return@TextButton
                         }
+
                         dosisKuantitas.isBlank() -> {
                             Toast.makeText(context, "Dosis harus diisi", Toast.LENGTH_SHORT).show()
                             return@TextButton
                         }
+
                         tanggalMulai.isBlank() -> {
-                            Toast.makeText(context, "Tanggal mulai harus diisi", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Tanggal mulai harus diisi", Toast.LENGTH_SHORT)
+                                .show()
                             return@TextButton
                         }
+
                         waktuAlarm.isEmpty() -> {
                             Toast.makeText(context, "Waktu minimal 1", Toast.LENGTH_SHORT).show()
                             return@TextButton
@@ -135,11 +146,19 @@ fun AddReminderScreen(navController: NavController) {
 
                             repository.createPengingat(token, request).fold(
                                 onSuccess = {
-                                    Toast.makeText(context, "Pengingat berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Pengingat berhasil ditambahkan",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     navController.popBackStack()
                                 },
                                 onFailure = { error ->
-                                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Error: ${error.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     isSaving = false
                                 }
                             )
@@ -158,7 +177,8 @@ fun AddReminderScreen(navController: NavController) {
                     Text(
                         text = "Simpan",
                         color = Color(0xFF2196F3),
-                        fontWeight = FontWeight.Bold
+                        fontFamily = hindMadurai,
+                        fontWeight = FontWeight.Normal
                     )
                 }
             }
@@ -353,7 +373,7 @@ fun AddReminderScreen(navController: NavController) {
                 )
 
                 Icon(
-                    imageVector = Icons.Default.ArrowForward,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
@@ -408,7 +428,18 @@ fun AddReminderScreen(navController: NavController) {
                         OutlinedTextField(
                             value = time,
                             onValueChange = { },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable() {
+                                    selectedTimeIndex = index
+                                    val parts = time.split(":")
+                                    if (parts.size == 2) {
+                                        initialHour = parts[0].toIntOrNull() ?: 8
+                                        initialMinute = parts[1].toIntOrNull() ?: 0
+                                    }
+                                    showTimePicker = true
+                                },
+                            enabled = false,
                             textStyle = TextStyle(
                                 color = Color.DarkGray,
                                 fontSize = 16.sp,
@@ -417,29 +448,21 @@ fun AddReminderScreen(navController: NavController) {
                             placeholder = { Text("--:--") },
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                disabledBorderColor = Color(0xFFE0E0E0),
+                                disabledTextColor = Color.DarkGray,
+                                disabledPlaceholderColor = Color.Gray,
+                                disabledTrailingIconColor = Color(0xFF2196F3),
                                 focusedBorderColor = Color(0xFF2196F3),
                                 unfocusedBorderColor = Color(0xFFE0E0E0)
                             ),
                             singleLine = true,
                             readOnly = true,
                             trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        selectedTimeIndex = index
-                                        val parts = time.split(":")
-                                        if (parts.size == 2) {
-                                            initialHour = parts[0].toIntOrNull() ?: 8
-                                            initialMinute = parts[1].toIntOrNull() ?: 0
-                                        }
-                                        showTimePicker = true
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.AccessTime,
-                                        contentDescription = "Pilih Waktu",
-                                        tint = Color(0xFF2196F3)
-                                    )
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.AccessTime,
+                                    contentDescription = "Pilih Waktu",
+                                    tint = Color(0xFF2196F3)
+                                )
                             }
                         )
 
@@ -549,4 +572,10 @@ fun AddReminderScreen(navController: NavController) {
             }
         )
     }
+}
+
+@Preview
+@Composable
+fun AddReminderScreenPreview() {
+    AddReminderScreen(navController = rememberNavController())
 }
