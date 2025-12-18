@@ -1,3 +1,4 @@
+.kotlin/errors
 /app/debug/
 /app/release/
 *.idea
