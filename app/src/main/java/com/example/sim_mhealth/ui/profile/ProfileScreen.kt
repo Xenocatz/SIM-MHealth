@@ -1,6 +1,5 @@
 package com.example.sim_mhealth.ui.profile
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
@@ -21,9 +20,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,18 +51,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.edit
 import androidx.navigation.NavController
 import com.example.sim_mhealth.data.api.PasienDetail
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.data.repository.ProfileRepository
 import com.example.sim_mhealth.data.service.StepsCounterService
-import com.example.sim_mhealth.data.worker.WorkManagerScheduler
 import com.example.sim_mhealth.ui.theme.DateInputWithCalendarPicker
+import com.example.sim_mhealth.utils.DateUtils
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +90,7 @@ fun ProfileScreen(navController: NavController) {
                     onSuccess = { response ->
                         pasienData = response.pasien
                         email = response.pasien.email
-                        tanggalLahir = formatDateForDisplay(response.pasien.tanggal_lahir)
+                        tanggalLahir = DateUtils.formatDateForDisplay(response.pasien.tanggal_lahir)
                         beratBadan = response.pasien.berat_badan?.toString() ?: ""
                         tinggiBadan = response.pasien.tinggi_badan?.toString() ?: ""
                         jenisKelamin = response.pasien.jenis_kelamin ?: ""
@@ -399,7 +394,7 @@ fun ProfileScreen(navController: NavController) {
 
                 Button(
                     onClick = {
-                        onLogout(context)
+                        prefsManager.logout()
                         navController.navigate("intro_screen") {
                             popUpTo(0) { inclusive = true }
                         }
@@ -418,7 +413,7 @@ fun ProfileScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
-                        imageVector = Icons.Default.ExitToApp,
+                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
@@ -434,35 +429,4 @@ fun ProfileScreen(navController: NavController) {
 private fun stopStepTracking(context: Context) {
     val intent = Intent(context, StepsCounterService::class.java)
     context.stopService(intent)
-}
-
-@SuppressLint("UseKtx")
-fun onLogout(context: Context) {
-    WorkManagerScheduler.cancelDailySave(context)
-    stopStepTracking(context)
-
-    val prefsManager = PreferencesManager(context)
-    val userId = prefsManager.getUserId()
-
-    if (userId != -1) {
-        val prefsName = "steps_prefs_user_$userId"
-        context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-            .edit {
-                clear()
-            }
-    }
-
-    prefsManager.clearLoginData()
-}
-
-fun formatDateForDisplay(dateString: String?): String {
-    if (dateString == null) return ""
-    return try {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        val date = inputFormat.parse(dateString)
-        outputFormat.format(date ?: Date())
-    } catch (e: Exception) {
-        dateString.substringBefore("T")
-    }
 }

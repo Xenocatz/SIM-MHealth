@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -153,7 +154,7 @@ fun ReminderListScreen(navController: NavController) {
                     modifier = Modifier.align(Alignment.CenterEnd),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    IconButton(onClick = { navController.navigate("notification_list") }) {
+                    IconButton(onClick = { navController.navigate("notification_screen") }) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = "Notifications",
@@ -268,7 +269,6 @@ fun ReminderListScreen(navController: NavController) {
                     showBottomSheet = false
                 },
                 onMarkDone = {
-                    // Handle mark as done
                     showBottomSheet = false
                 })
         }
@@ -400,12 +400,16 @@ fun ReminderCard(reminder: PengingatItem, onClick: () -> Unit) {
                     text = reminder.nama_obat,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color.Black,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = "${reminder.dosis_kuantitas.toInt()} ${reminder.dosis_unit} - ${reminder.catatan ?: "setelah makan"}",
                     fontSize = 13.sp,
-                    color = Color.DarkGray
+                    color = Color.DarkGray,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
@@ -451,23 +455,17 @@ fun ReminderBottomSheet(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = reminder.nama_obat,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = reminder.waktu_alarm.firstOrNull() ?: "00:00",
-                            fontSize = 14.sp,
-                            color = Color.White
-                        )
-                    }
+                    Text(
+                        text = reminder.nama_obat,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Text(
+                        text = reminder.waktu_alarm.firstOrNull() ?: "00:00",
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
                     Text(
                         text = "${reminder.dosis_kuantitas.toInt()} ${reminder.dosis_unit} - ${reminder.catatan ?: "setelah makan"}",
                         fontSize = 14.sp,

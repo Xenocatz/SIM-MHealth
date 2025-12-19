@@ -186,7 +186,7 @@ fun RegisterScreen(
                         selectedSegment = currentAuthSegment,
                         onSegmentSelected = { segment ->
                             if (segment == AuthSegment.LOGIN) {
-                                navController.popBackStack()
+                                navController.navigate("login_screen")
                             }
                         }
                     )

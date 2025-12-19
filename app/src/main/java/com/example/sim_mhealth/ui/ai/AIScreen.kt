@@ -1,16 +1,45 @@
 package com.example.sim_mhealth.ui.ai
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,12 +50,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
 import com.example.sim_mhealth.BuildConfig
 import com.example.sim_mhealth.data.preferences.PreferencesManager
 import com.example.sim_mhealth.ui.theme.Gray700
+import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.ServerException
+import com.google.ai.client.generativeai.type.content
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -85,7 +114,8 @@ fun AIScreen(navController: NavController) {
             chatMessages = listOf(
                 ChatMessage(
                     id = "welcome",
-                    text = "Haloo, " + (prefsManager.getUsername() ?: "User") + " \n\nTanyakan Seputar Kesehatan\nDengan Asisten AI",
+                    text = "Haloo, " + (prefsManager.getUsername()
+                        ?: "User") + " \n\nTanyakan Seputar Kesehatan\nDengan Asisten AI",
                     isFromUser = false
                 )
             )
@@ -340,12 +370,12 @@ fun AIScreen(navController: NavController) {
                                     chatMessages = chatMessages + aiResponse
 
                                 } catch (e: RateLimitException) {
-                                        chatMessages = chatMessages + ChatMessage(
-                                            id = System.currentTimeMillis().toString(),
-                                            text = "⏱️ ${e.message}\n\nSisa kuota menit ini: ${rateLimiter.getRemainingRequests()}/15",
-                                            isFromUser = false
-                                        )
-                                        isLoading = false
+                                    chatMessages = chatMessages + ChatMessage(
+                                        id = System.currentTimeMillis().toString(),
+                                        text = "⏱️ ${e.message}\n\nSisa kuota menit ini: ${rateLimiter.getRemainingRequests()}/15",
+                                        isFromUser = false
+                                    )
+                                    isLoading = false
                                 } catch (e: Exception) {
                                     val errorResponse = ChatMessage(
                                         id = System.currentTimeMillis().toString(),
@@ -401,7 +431,8 @@ suspend fun generateWithRetry(
                 modelName = "gemini-2.0-flash-lite",
                 apiKey = BuildConfig.GEMINI_API_KEY,
                 systemInstruction = content {
-                    text("""
+                    text(
+                        """
                         Kamu adalah asisten kesehatan Indonesia yang profesional dan ramah.
                         
                         ATURAN PENTING:
@@ -411,7 +442,8 @@ suspend fun generateWithRetry(
                         - Fokus pada informasi yang paling penting
                         - Jika perlu penjelasan panjang, buat poin-poin ringkas
                         - Selalu ingatkan untuk konsultasi dengan dokter untuk diagnosa yang akurat
-                    """.trimIndent())
+                    """.trimIndent()
+                    )
                 }
             )
 
@@ -425,7 +457,10 @@ suspend fun generateWithRetry(
                 val waitTime = 60_000L * (attempt + 1) // 1 menit, 2 menit, 3 menit
                 if (attempt < maxRetries - 1) {
                     // TAMPILKAN PESAN KE USER
-                    throw RateLimitException("Terkena rate limit server. Akan coba lagi dalam ${waitTime / 1000} detik...", waitTime)
+                    throw RateLimitException(
+                        "Terkena rate limit server. Akan coba lagi dalam ${waitTime / 1000} detik...",
+                        waitTime
+                    )
                 }
             } else {
                 lastException = e

@@ -51,6 +51,7 @@ import com.example.sim_mhealth.ui.theme.Gray50
 import com.example.sim_mhealth.ui.theme.Gray700
 import com.example.sim_mhealth.ui.theme.Primary600
 import com.example.sim_mhealth.ui.theme.SIMMHealthTheme
+import com.example.sim_mhealth.utils.DateUtils
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -338,16 +339,8 @@ fun OnBoardingScreen3(
                                 val tinggiBadan = OnBoardingData.tinggiBadan
 
                                 // Convert date format DD/MM/YYYY to YYYY-MM-DD
-                                val dateFormatted = try {
-                                    val parts = tanggalLahir.split("/")
-                                    if (parts.size == 3) {
-                                        "${parts[2]}-${parts[1]}-${parts[0]}"
-                                    } else {
-                                        tanggalLahir
-                                    }
-                                } catch (e: Exception) {
-                                    tanggalLahir
-                                }
+                                val dateFormatted =
+                                    DateUtils.convertToISO8601(tanggalLahir) ?: tanggalLahir
 
                                 // Parse input user jadi array
                                 // User input: "Diabetes, Hipertensi, Asma"
@@ -364,7 +357,7 @@ fun OnBoardingScreen3(
 
                                 val sejakKapanClean =
                                     if (hasHealthCondition == true && sejakKapan.isNotBlank()) {
-                                        sejakKapan.trim().replace("/", "-")
+                                        DateUtils.convertToISO8601(sejakKapan)
                                     } else {
                                         null
                                     }
@@ -389,7 +382,9 @@ fun OnBoardingScreen3(
                                                 .show()
 
                                             OnBoardingData.reset()
+                                            prefsManager.setOnboardingCompleted(true)
 
+                                            prefsManager.setOnboardingCompleted(true)
                                             navController.navigate("home_screen") {
                                                 popUpTo(0) { inclusive = true }
                                             }

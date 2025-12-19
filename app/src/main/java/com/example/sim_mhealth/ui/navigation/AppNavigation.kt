@@ -1,5 +1,7 @@
 package com.example.sim_mhealth.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -29,6 +31,7 @@ import com.example.sim_mhealth.ui.reminder.EditReminderScreen
 import com.example.sim_mhealth.ui.reminder.ReminderListScreen
 import com.example.sim_mhealth.ui.stepsTrack.StepsTrackScreen
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun AppNavigation() {
     val context = LocalContext.current
@@ -45,14 +48,12 @@ fun AppNavigation() {
     )
     val shouldShowBottomBar = currentRoute in bottomBarRoutes
 
-
     val preferencesManager = PreferencesManager(context)
-    val start = if (preferencesManager.isLoggedIn()) {
-        "home_screen"
-    } else {
-        "intro_screen"
+    val start = when {
+        !preferencesManager.isLoggedIn() -> "intro_screen"
+        !preferencesManager.isOnboardingCompleted() -> "onboarding_screen_1"
+        else -> "home_screen"
     }
-
 
     Scaffold(
         bottomBar = {
